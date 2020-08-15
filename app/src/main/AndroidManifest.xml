@@ -6,12 +6,24 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+    <!-- If we add bar or restaurants, the position will be neccesary !
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    -->
 
     <uses-feature
         android:name="android.hardware.nfc"
         android:required="true" />
+
+    <!-- If Freestyle Libre Sensor 2 can be used, the app will need bluetooth !
+    <uses-feature
+        android:name="android.hardware.bluetooth"
+        android:required="false" />
+    -->
 
     <application
         android:name=".OpenLibre"
