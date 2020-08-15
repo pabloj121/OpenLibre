@@ -217,6 +217,9 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         } else if (id == R.id.action_enter_blood_glucose) {
             DialogFragment bloodGlucoseInputFragment = new BloodGlucoseInputFragment();
             bloodGlucoseInputFragment.show(getSupportFragmentManager(), "enterglucose");
+
+            // Controlar tamaño del historial que se va guardando en cada momento
+
             return true;
 
         } else if (id == R.id.action_show_fpu_calculator) {
