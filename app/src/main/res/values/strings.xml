@@ -1,0 +1,125 @@
+<resources>
+    <string name="app_name" translatable="false">OpenLibre</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="pause">Pause</string>
+
+    <string name="fragment_title_scan">Scan</string>
+    <string name="fragment_title_log">Log</string>
+
+    <string name="action_show_last_scan">Last Scan</string>
+    <string name="action_show_all_data">All Data</string>
+    <string name="action_enter_blood_glucose">Enter BGL</string>
+    <string name="action_show_fpu_calculator">FPU Calculator</string>
+    <string name="action_tidepool_status">Tidepool Status</string>
+    <string name="action_sensor_status">Sensor Status</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_debug">Debug</string>
+    <string name="action_about">About</string>
+    <string name="action_close">Close</string>
+
+    <string name="title_blood_glucose">Blood glucose level</string>
+    <string name="enter_blood_glucose">Enter manually measured blood glucose level:</string>
+
+    <string name="title_sensor_status">Sensor Status</string>
+    <string name="sensor_id">ID:</string>
+    <string name="sensor_start_date">Start date:</string>
+    <string name="sensor_expires_in">Expires in:</string>
+
+    <string name="glucose_unit_mgdl" translatable="false">mg/dl</string>
+    <string name="glucose_unit_mmoll" translatable="false">mmol/l</string>
+
+    <string name="pref_general_settings">General</string>
+    <string name="pref_glucose_unit">Unit</string>
+    <string name="pref_glucose_unit_summary">Set the unit of measurement</string>
+    <string name="pref_glucose_target_area">Target Area</string>
+    <string name="pref_glucose_target_min">Glucose Target Minimum</string>
+    <string name="pref_glucose_target_max">Glucose Target Maximum</string>
+
+    <string name="pref_rotation_lock">Rotation Lock</string>
+    <string name="pref_rotation_lock_sum">Keep portrait orientation</string>
+
+    <string name="pref_nfc_settings">NFC Scan</string>
+    <string name="pref_nfc_quick_scan">Fast Scan</string>
+    <string name="pref_nfc_quick_scan_summary">Does not work with all devices</string>
+
+    <string name="pref_debug_settings">Debugging</string>
+    <string name="pref_debug_mode">Debug Mode</string>
+    <string name="pref_debug_mode_summary">Show debugging options</string>
+
+    <string name="day">Day</string>
+    <string name="days">Days</string>
+    <string name="hour">Hour</string>
+    <string name="hours">Hours</string>
+    <string name="minute">Minute</string>
+    <string name="minutes">Minutes</string>
+
+    <string name="sensor_not_activated_yet">Sensor not activated, yet.</string>
+    <string name="sensor_ready_in">Sensor ready in %d Minutes.</string>
+    <string name="sensor_expired">Sensor expired.</string>
+    <string name="no_sensor_registered">No registered sensor currently active.</string>
+
+    <string name="scan_a_sensor">Scan a sensor</string>
+    <string name="tv_scan_sensor_advice">Scan sensor by holding the backside of your device against the sensor.</string>
+
+    <string name="reading_sensor">Reading…</string>
+    <string name="reading_sensor_success">Successfully read sensor.</string>
+    <string name="reading_sensor_not_ready">Sensor is not yet ready.</string>
+    <string name="reading_sensor_error">Error reading the sensor, please try again.</string>
+
+    <string name="account">Account</string>
+    <string name="login_failed">Login failed</string>
+    <string name="logging_in">Logging in…</string>
+    <string name="synchronization">Synchronization</string>
+    <string name="synchronize">Synchronize</string>
+    <string name="synchronized_until" formatted="false">Synchronized until %s</string>
+    <string name="not_synchronized">Not synchronized</string>
+    <string name="tidepool_sync_success">Successfully synchronized with Tidepool.</string>
+    <string name="tidepool_sync_error">Error synchronizing with Tidepool.</string>
+
+    <string name="error_nfc_device_not_supported">"This device doesn't support NFC."</string>
+    <string name="error_nfc_disabled">NFC is disabled, please enable in device settings.</string>
+
+    <string name="blood_glucose_estimation">BG estimation</string>
+    <string name="glucose_current_value" formatted="false">Subcutaneous glucose level: %s %s</string>
+
+    <string name="about_description">OpenLibre allows to read the data of the Freestyle Libre CGM via NFC.</string>
+    <string name="about_source">OpenLibre is free and open source and can be obtained from its website:</string>
+    <string name="about_source_link" translatable="false">http://github.com/dorianscholz/openlibre</string>
+
+    <string name="crash_toast_text">Unfortunately OpenLibre has crashed.</string>
+    <string name="crash_dialog_text">Unfortunately OpenLibre has crashed. Please help fix this issue by reporting this crash. All you have to do is press OK.</string>
+    <string name="crash_dialog_comment_prompt">If you like, you can describe what happened before the crash:</string>
+    <string name="crash_dialog_ok_toast">Thank you very much for your crash report!</string>
+
+    <string name="pref_tidepool_auto_sync">Automatic Synchronization</string>
+    <string name="pref_tidepool_auto_sync_summary">Upload CGM data to Tidepool servers on each sensor readout.</string>
+    <string name="pref_username">Username</string>
+    <string name="pref_password">Password</string>
+    <string name="pref_server">Server</string>
+    <string name="pref_tidepool_server_default" translatable="false">Production</string>
+    <string name="pref_tidepool_auto_sync_mobile">Also via mobile network</string>
+    <string name="pref_tidepool_auto_sync_mobile_summary">Automatically synchronize also via mobile data service.</string>
+    <string name="pref_tidepool_username_summary">The username is usually your email address.</string>
+    <string name="pref_tidepool_server_summary">Tidepool server to use (default: Production).</string>
+    <string name="pref_developer_mode">Developer Mode</string>
+    <string name="pref_developer_mode_summary">Show advanced options for the developer.</string>
+    <string name="pref_glucose_unit_is_mmol">Glucose unit is mmol/L</string>
+    <string name="pref_glucose_unit_is_mmol_summary">If checked, show glucose values in mmol/L otherwise in mg/dL.</string>
+    <string name="pref_nfc_use_multi_block_read">Use NFC Block Mode</string>
+    <string name="pref_nfc_use_multi_block_read_summary">Read sensor quicker in NFC multi-block mode (disable if you have problems reading the sensor).</string>
+
+    <string name="export">Export</string>
+    <string name="export_data">Export Data</string>
+    <string name="exporting">Exporting…</string>
+    <string name="export_until" formatted="false">Exported until %s</string>
+    <string name="export_data_type">Data</string>
+    <string name="export_data_type_glucose">Glucose Measurements</string>
+    <string name="export_data_type_reading">Decoded Sensor Readings</string>
+    <string name="export_data_type_raw">Raw Sensor Readings</string>
+    <string name="export_output_format">Format</string>
+    <string name="export_output_format_json">JSON</string>
+    <string name="export_output_format_csv">CSV</string>
+
+</resources>

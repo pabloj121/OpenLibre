@@ -1,0 +1,88 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="de.dorianscholz.openlibre.ui.MainActivity">
+    <item
+        android:id="@+id/action_show_last_scan"
+        android:title="@string/action_show_last_scan"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_show_full_history"
+        android:title="@string/action_show_all_data"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_show_sensor_status"
+        android:title="@string/action_sensor_status"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_tidepool_status"
+        android:title="@string/action_tidepool_status"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_enter_blood_glucose"
+        android:title="@string/action_enter_blood_glucose"
+        app:showAsAction="never"
+        android:visible="false" />
+    <item
+        android:id="@+id/action_show_fpu_calculator"
+        android:title="@string/action_show_fpu_calculator"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_export"
+        android:title="@string/export_data"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_about"
+        android:title="@string/action_about"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_debug_menu"
+        android:title="DEBUG">
+        <menu >
+            <item
+                android:id="@+id/action_reparse_raw_data"
+                android:title="reparse data"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/action_debug_cont_nfc_reading"
+                android:title="cont. NFC read"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/action_debug_clear_plot"
+                android:title="clear plot"
+                android:visible="false"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/action_delete_debug_data"
+                android:title="delete debug data"
+                app:showAsAction="never"
+                android:visible="false" />
+            <item
+                android:id="@+id/action_debug_not_ready"
+                android:title="sensor not ready"
+                app:showAsAction="never"
+                android:visible="false" />
+            <item
+                android:id="@+id/action_debug_export_data"
+                android:title="export data"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/action_debug_plot_readings"
+                android:title="plot readings"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/action_debug_value2"
+                android:title="fake scan data"
+                app:showAsAction="never"
+                android:visible="false" />
+            <item
+                android:id="@+id/action_debug_make_crash"
+                android:title="crash app"
+                app:showAsAction="never" />
+        </menu>
+    </item>
+</menu>
