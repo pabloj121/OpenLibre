@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="de.dorianscholz.openlibre.ui.MainActivity">
     <item
+        android:id="@+id/action_agenda"
+        android:title="Agenda"
+        android:icon="@drawable/baseline_calendar_today_white_18dp"
+        app:showAsAction="always"
+        />
+    <item
         android:id="@+id/action_show_last_scan"
         android:title="@string/action_show_last_scan"
         app:showAsAction="never" />
@@ -21,7 +27,8 @@
     <item
         android:id="@+id/action_enter_blood_glucose"
         android:title="@string/action_enter_blood_glucose"
-        app:showAsAction="never"
+        android:icon="@drawable/baseline_add_white_18dp"
+        app:showAsAction="ifRoom"
         android:visible="true" />
     <item
         android:id="@+id/action_show_fpu_calculator"

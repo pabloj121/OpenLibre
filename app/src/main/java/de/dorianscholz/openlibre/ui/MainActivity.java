@@ -387,7 +387,14 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             mRealmProcessedData.commitTransaction();
             return true;
 
+        } else if (id == R.id.action_agenda){
+            // Desplegar opciones con agenda, conectar previamente con Google...
+
+            // Ha iniciado sesión con Google ?
+
+            
         }
+
         return super.onOptionsItemSelected(item);
     }
 

@@ -114,12 +114,12 @@
     <string name="export">Exportar</string>
     <string name="export_data">Exportar Datos</string>
     <string name="exporting">Exportando…</string>
-    <string name="export_until" formatted="false">Exported until %s</string>
+    <string name="export_until" formatted="false">Exportado hasta %s</string>
     <string name="export_data_type">Datos</string>
-    <string name="export_data_type_glucose">Glucose Measurements</string>
-    <string name="export_data_type_reading">Decoded Sensor Readings</string>
-    <string name="export_data_type_raw">Raw Sensor Readings</string>
-    <string name="export_output_format">Format</string>
+    <string name="export_data_type_glucose">Mediciones de glucosa</string>
+    <string name="export_data_type_reading">Lecturas del lector decodificadas</string>
+    <string name="export_data_type_raw">Lecturas del sensor en bruto</string>
+    <string name="export_output_format">Formato</string>
     <string name="export_output_format_json">JSON</string>
     <string name="export_output_format_csv">CSV</string>
 
