@@ -22,7 +22,7 @@
         android:id="@+id/action_enter_blood_glucose"
         android:title="@string/action_enter_blood_glucose"
         app:showAsAction="never"
-        android:visible="false" />
+        android:visible="true" />
     <item
         android:id="@+id/action_show_fpu_calculator"
         android:title="@string/action_show_fpu_calculator"

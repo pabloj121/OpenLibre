@@ -25,6 +25,7 @@
         android:required="false" />
     -->
 
+    <!-- Cambiar icono de la App android:icon ! -->
     <application
         android:name=".OpenLibre"
         android:allowBackup="true"
@@ -57,7 +58,7 @@
             android:label="@string/action_settings"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme"/>
     </application>
 
 </manifest>
