@@ -24,13 +24,15 @@ class SectionsPagerAdapter extends SmartFragmentStatePagerAdapter {
                 return DataPlotFragment.newInstance();
         else if (position == mContext.getResources().getInteger(R.integer.viewpager_page_fragment_log))
                 return LogFragment.newInstance();
+        else if (position == mContext.getResources().getInteger(R.integer.viewpager_page_fragment_agenda))
+            return AgendaFragment.newInstance();
         return null;
     }
 
     @Override
     public int getCount() {
-        // Show 2 total pages.
-        return 2;
+        // Show 3 total pages. (Now with the agenda fragment !)
+        return 3;
     }
 
     @Override
@@ -39,6 +41,8 @@ class SectionsPagerAdapter extends SmartFragmentStatePagerAdapter {
             return mContext.getResources().getString(R.string.fragment_title_scan);
         else if (position == mContext.getResources().getInteger(R.integer.viewpager_page_fragment_log))
             return mContext.getResources().getString(R.string.fragment_title_log);
+        else if (position == mContext.getResources().getInteger(R.integer.viewpager_page_fragment_agenda))
+            return mContext.getResources().getString(R.string.fragment_title_agenda);
         return null;
     }
 }

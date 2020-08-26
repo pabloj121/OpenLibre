@@ -13,6 +13,7 @@
     <string name="error_nfc_device_not_supported">Dieses Gerät unterstützt kein NFC.</string>
     <string name="error_nfc_disabled">NFC is ausgeschaltet, bitte in den Geräteeinstellungen einschalten.</string>
     <string name="fragment_title_log">Log</string>
+    <string name="fragment_title_agenda">Agenda</string>
     <string name="fragment_title_scan">Scan</string>
     <string name="glucose_current_value" formatted="false">Gewebezuckerwert: %s %s</string>
     <string name="hour">Stunde</string>

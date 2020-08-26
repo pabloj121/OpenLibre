@@ -7,6 +7,7 @@
 
     <string name="fragment_title_scan">Scan</string>
     <string name="fragment_title_log">Log</string>
+    <string name="fragment_title_agenda">Agenda</string>
 
     <string name="action_show_last_scan">Último Escaneo</string>
     <string name="action_show_all_data">All Data</string>

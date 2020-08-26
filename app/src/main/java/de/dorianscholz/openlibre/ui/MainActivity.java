@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             bloodGlucoseInputFragment.show(getSupportFragmentManager(), "enterglucose");
 
             // Controlar tamaño del historial que se va guardando en cada momento
-
+            //System.out.println(valor);
             return true;
 
         } else if (id == R.id.action_show_fpu_calculator) {
@@ -388,11 +388,11 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             return true;
 
         } else if (id == R.id.action_agenda){
-            // Desplegar opciones con agenda, conectar previamente con Google...
+            // Desplegar opciones con agenda, conectar previamente con Google... !
 
             // Ha iniciado sesión con Google ?
 
-            
+
         }
 
         return super.onOptionsItemSelected(item);

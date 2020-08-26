@@ -2,12 +2,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="de.dorianscholz.openlibre.ui.MainActivity">
+    <!--android:icon="@drawable/baseline_calendar_today_white_18dp"-->
     <item
         android:id="@+id/action_agenda"
         android:title="Agenda"
         android:icon="@drawable/baseline_calendar_today_white_18dp"
-        app:showAsAction="always"
-        />
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_google"
+        android:title="Log in with Google"
+        android:icon="@drawable/iconfinder_2_939729"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_show_last_scan"
         android:title="@string/action_show_last_scan"
@@ -28,7 +33,7 @@
         android:id="@+id/action_enter_blood_glucose"
         android:title="@string/action_enter_blood_glucose"
         android:icon="@drawable/baseline_add_white_18dp"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:visible="true" />
     <item
         android:id="@+id/action_show_fpu_calculator"
