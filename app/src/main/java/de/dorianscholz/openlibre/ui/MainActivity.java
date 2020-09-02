@@ -81,6 +81,10 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Go to the previous screen after press on the back arrow !
+        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         // Create the adapter that will return a fragment for each of the
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), getApplicationContext());
@@ -220,6 +224,11 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
             // Controlar tamaño del historial que se va guardando en cada momento
             //System.out.println(valor);
+            List<GlucoseData> history = mRealmProcessedData.where(GlucoseData.class).findAllSorted(GlucoseData.DATE,
+                    Sort.ASCENDING);
+
+            System.out.println("Tamaño del historial: " + history.size());
+
             return true;
 
         } else if (id == R.id.action_show_fpu_calculator) {

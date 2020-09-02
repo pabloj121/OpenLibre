@@ -16,13 +16,15 @@ And crash reports will on be sent to the author of this app after manual confirm
 
 
 ## Screenshots
-<img title="Before scanning the sensor" src="../gh-pages/screenshots/start.png?raw=true" width="200"></img>
+<!--
+<img title="Before scanning the sensor" src="../gh-pages/screenshots/start.png?raw=true" width="200"></img> 
 <img title="Showing the data after scanning the sensor" src="../gh-pages/screenshots/scan.png?raw=true" width="200"></img>
 <img title="Log of previous scan data" src="../gh-pages/screenshots/log.png?raw=true" width="200"></img>
 <img title="Status of the current scanned sensor" src="../gh-pages/screenshots/sensor.png?raw=true" width="200"></img>
 <img title="Data export dialog" src="../gh-pages/screenshots/export.png?raw=true" width="200"></img>
-<img title="Tidepool synchronization dialog" src="../gh-pages/screenshots/tidepool.png?raw=true" width="200"></img>
-
+<img title="Tidepool synchronization dialog" src="../gh-pages/screenshots/tidepool.png?raw=true" width="200"></img> 
+-->
+<img title="Main page screen shot" src="app/src/main/res/drawable/Captura.png">
 
 ## Building
 The app depends on the [TidepoolAPILib](https://github.com/DorianScholz/TidepoolAPILib).
