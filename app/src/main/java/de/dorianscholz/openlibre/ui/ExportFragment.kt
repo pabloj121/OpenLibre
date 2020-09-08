@@ -3,12 +3,14 @@ package de.dorianscholz.openlibre.ui
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AlertDialog
+// import android.support.v4.app.DialogFragment
+// import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
 import de.dorianscholz.openlibre.R
 import de.dorianscholz.openlibre.service.ExportTask
 import de.dorianscholz.openlibre.service.ExportTask.exportDataAsync
@@ -33,7 +35,7 @@ class ExportFragment : DialogFragment() {
         companion object {
             // resolve resource ids to localized strings when context is available
             fun init(context: Context) {
-                DataTypes.values().map { it.localizedString = context.getString(it.localizedStringId) }
+                values().map { it.localizedString = context.getString(it.localizedStringId) }
             }
         }
     }
@@ -56,8 +58,9 @@ class ExportFragment : DialogFragment() {
     private val dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
     private lateinit var dialogView: View
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        DataTypes.init(context)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        context?.let { DataTypes.init(it) }
+
         if (showsDialog) {
             return super.onCreateView(inflater, container, savedInstanceState)
         } else {
@@ -77,8 +80,8 @@ class ExportFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         dialogView = activity.layoutInflater.inflate(R.layout.fragment_export, null)
 
-        spinner_data_type.adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, DataTypes.values())
-        spinner_output_format.adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, OutputFormats.values())
+        spinner_data_type.adapter = context?.let { ArrayAdapter(it, android.R.layout.simple_spinner_dropdown_item, DataTypes.values()) }
+        spinner_output_format.adapter = context?.let { ArrayAdapter(it, android.R.layout.simple_spinner_dropdown_item, OutputFormats.values()) }
 
         button_export_or_cancel.setOnClickListener {
             if (ExportTask.isRunning) {
@@ -108,7 +111,7 @@ class ExportFragment : DialogFragment() {
     }
 
     fun updateProgress(progress: Double, currentDate: Date?) {
-        activity.runOnUiThread {
+        activity?.runOnUiThread {
             if (ExportTask.isRunning) {
                 button_export_or_cancel.text = getString(R.string.cancel)
                 pb_export.visibility = View.VISIBLE
@@ -128,7 +131,7 @@ class ExportFragment : DialogFragment() {
     }
 
     fun finished() {
-        activity.runOnUiThread {
+        activity?.runOnUiThread {
             button_export_or_cancel.text = getString(R.string.export)
             button_export_or_cancel.isEnabled = true
             pb_export.visibility = View.INVISIBLE

@@ -1,6 +1,6 @@
 package de.dorianscholz.openlibre.model;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;

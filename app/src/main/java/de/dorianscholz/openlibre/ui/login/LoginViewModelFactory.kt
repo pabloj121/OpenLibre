@@ -1,7 +1,7 @@
 package de.dorianscholz.openlibre.ui.login
 
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import de.dorianscholz.openlibre.data.LoginDataSource
 import de.dorianscholz.openlibre.data.LoginRepository
 

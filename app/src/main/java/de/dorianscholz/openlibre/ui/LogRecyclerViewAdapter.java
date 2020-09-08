@@ -2,7 +2,7 @@ package de.dorianscholz.openlibre.ui;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;

@@ -14,13 +14,20 @@ import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.RealmResults
 import io.realm.Sort
-import kotlinx.coroutines.CommonPool
-import kotlinx.coroutines.android.UI
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+// import kotlinx.coroutines.CommonPool
+import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.Dispatchers.Main
+// import kotlinx.coroutines.android.UI
+// import kotlinx.coroutines.*
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 import java.lang.Math.abs
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -53,11 +60,19 @@ object ExportTask {
         finishedCallbacks.forEach { it() }
     }
 
-    fun exportDataAsync(dataType: ExportFragment.DataTypes, outputFormat: ExportFragment.OutputFormats) = async(UI) {
+    /*
+    * Instead of CommonPool, now most use Dispatchers.Default
+    * Instead of UI, must use Dispatchers.Main
+    *
+    * */
+
+    val uiScope = CoroutineScope(Dispatchers.Main)
+
+    fun exportDataAsync(dataType: ExportFragment.DataTypes, outputFormat: ExportFragment.OutputFormats) = uiScope.launch {
         try {
             isRunning = true
             isCancelled = false
-            val job = async(CommonPool) {
+            val job = async(Dispatchers.Default) {
                 when (dataType) {
                     ExportFragment.DataTypes.RAW ->
                         Realm.getInstance(realmConfigRawData).use { realm ->
@@ -92,6 +107,48 @@ object ExportTask {
             notifyFinished()
         }
     }
+
+    /*
+    fun exportDataAsync(dataType: ExportFragment.DataTypes, outputFormat: ExportFragment.OutputFormats) = async(Dispatchers.Main) {
+        try {
+            isRunning = true
+            isCancelled = false
+            val job = async(Dispatchers.Default) {
+                when (dataType) {
+                    ExportFragment.DataTypes.RAW ->
+                        Realm.getInstance(realmConfigRawData).use { realm ->
+                            exportEntries<RawTagData>("raw-data", outputFormat, realm,
+                                    realm.where(RawTagData::class.java)
+                                            .findAllSorted(RawTagData.DATE, Sort.ASCENDING))
+                        }
+
+                    ExportFragment.DataTypes.READING ->
+                        Realm.getInstance(realmConfigProcessedData).use { realm ->
+                            exportEntries<ReadingData>("decoded-data", outputFormat, realm,
+                                    realm.where(ReadingData::class.java)
+                                            .findAllSorted(ReadingData.DATE, Sort.ASCENDING))
+                        }
+
+                    ExportFragment.DataTypes.GLUCOSE ->
+                        Realm.getInstance(realmConfigProcessedData).use { realm ->
+                            exportEntries<GlucoseData>("glucose-data", outputFormat, realm,
+                                    realm.where(GlucoseData::class.java)
+                                            .equalTo(GlucoseData.IS_TREND_DATA, false)
+                                            .findAllSorted(GlucoseData.DATE, Sort.ASCENDING))
+                        }
+                }
+            }
+            job.await()
+        }
+        catch (e: Exception) {
+            Log.e(LOG_ID, "Error in exportDataAsync: " + e.toString())
+        }
+        finally {
+            isRunning = false
+            notifyFinished()
+        }
+    }
+    */
 
     inline private suspend fun <reified T: RealmObject> exportEntries(
             dataType: String, outputFormat: ExportFragment.OutputFormats, realm: Realm, realmResults: RealmResults<T>) {
@@ -150,7 +207,7 @@ object ExportTask {
             return
         }
         var csvSeparator = ','
-        if (java.text.DecimalFormatSymbols.getInstance().decimalSeparator == csvSeparator) {
+        if (DecimalFormatSymbols.getInstance().decimalSeparator == csvSeparator) {
             csvSeparator = ';'
         }
         try {
