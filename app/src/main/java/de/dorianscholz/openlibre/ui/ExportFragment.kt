@@ -77,8 +77,9 @@ class ExportFragment : DialogFragment() {
         return dialogView
     }
 
+    // the return type was AlertDialog
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        dialogView = activity.layoutInflater.inflate(R.layout.fragment_export, null)
+        dialogView = requireActivity().layoutInflater.inflate(R.layout.fragment_export, null)
 
         spinner_data_type.adapter = context?.let { ArrayAdapter(it, android.R.layout.simple_spinner_dropdown_item, DataTypes.values()) }
         spinner_output_format.adapter = context?.let { ArrayAdapter(it, android.R.layout.simple_spinner_dropdown_item, OutputFormats.values()) }
@@ -99,10 +100,12 @@ class ExportFragment : DialogFragment() {
 
         ExportTask.registerCallbacks(this::finished, this::updateProgress)
 
-        return AlertDialog.Builder(activity)
-                .setTitle(R.string.export_data)
-                .setView(dialogView)
-                .create()
+        return this!!.activity?.let {
+            AlertDialog.Builder(it)
+                    .setTitle(R.string.export_data)
+                    .setView(dialogView)
+                    .create()
+        }!!
     }
 
     override fun onDestroyView() {
