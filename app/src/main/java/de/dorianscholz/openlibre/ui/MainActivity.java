@@ -10,6 +10,8 @@ import android.nfc.NfcManager;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.tabs.TabLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -21,6 +23,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 
@@ -70,6 +74,9 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
     private Tag mLastNfcTag;
     private MainActivity mainActivity;
 
+    private FirebaseAuth auth;
+    private boolean logged = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
@@ -81,6 +88,15 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        auth = FirebaseAuth.getInstance();
+
+        if (auth.getCurrentUser() != null) {
+            // already signed in
+            logged = true;
+        } else {
+            // not signed in
+        }
 
         // Go to the previous screen after press on the back arrow !
         // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -106,6 +122,14 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             Log.e(LOG_ID,"No NFC adapter found!");
             Toast.makeText(this, getResources().getString(R.string.error_nfc_device_not_supported), Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+
+        FirebaseUser user = auth.getCurrentUser();
+
     }
 
     @Override
@@ -396,10 +420,23 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             mRealmProcessedData.commitTransaction();
             return true;
 
+        } else if ( id == R.id.action_google){
+
+            // If logged in a previous time, the user does not need to log in again
+            if (isLogged()){
+                
+            } else{
+
+            }
+
+
         } else if (id == R.id.action_agenda){
             // Desplegar opciones con agenda, conectar previamente con Google... !
 
             // Ha iniciado sesión con Google ?
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail().build();
 
 
         }
@@ -437,6 +474,7 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
     @Override
     protected void onNewIntent(Intent data) {
+        super.onNewIntent(data);
         resolveIntent(data);
     }
 
@@ -478,5 +516,9 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
                 resolveIntent(data);
                 break;
         }
+    }
+
+    public boolean isLogged() {
+        return logged;
     }
 }

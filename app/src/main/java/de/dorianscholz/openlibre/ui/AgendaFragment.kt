@@ -66,6 +66,12 @@ class AgendaFragment : Fragment() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+    }
+
+
     fun show(){
 
     }
