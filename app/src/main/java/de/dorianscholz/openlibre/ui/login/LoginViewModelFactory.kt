@@ -2,8 +2,8 @@ package de.dorianscholz.openlibre.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import de.dorianscholz.openlibre.data.LoginDataSource
-import de.dorianscholz.openlibre.data.LoginRepository
+import de.dorianscholz.openlibre.ui.data.LoginDataSource
+import de.dorianscholz.openlibre.ui.data.LoginRepository
 
 /**
  * ViewModel provider factory to instantiate LoginViewModel.

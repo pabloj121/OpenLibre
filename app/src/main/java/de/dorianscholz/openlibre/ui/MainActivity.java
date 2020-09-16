@@ -45,6 +45,9 @@ import de.dorianscholz.openlibre.model.ReadingData;
 import de.dorianscholz.openlibre.model.SensorData;
 import de.dorianscholz.openlibre.service.NfcVReaderTask;
 import de.dorianscholz.openlibre.service.TidepoolSynchronization;
+import de.dorianscholz.openlibre.ui.login.LoginActivity;
+
+import de.dorianscholz.openlibre.ui.login.LoginActivityKt;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -217,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
+
             return true;
 
         } else if (id == R.id.action_show_last_scan) {
@@ -421,22 +425,35 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             return true;
 
         } else if ( id == R.id.action_google){
-
             // If logged in a previous time, the user does not need to log in again
+            /*
             if (isLogged()){
-                
+                Toast.makeText(this, "The user is already logged in", Toast.LENGTH_SHORT).show();
             } else{
+                // Pantalla que muestre boton de inicio de sesión
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+                return true;
+            }
+            */
+
+            if (auth.getCurrentUser() != null){
+                Toast.makeText(this, "The user is already logged in", Toast.LENGTH_SHORT).show();
+            } else {
+                Intent intent = new Intent(this, LoginActivity.class);
+
+                startActivity(intent);
+                finish();
 
             }
-
 
         } else if (id == R.id.action_agenda){
             // Desplegar opciones con agenda, conectar previamente con Google... !
 
             // Ha iniciado sesión con Google ?
-            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(getString(R.string.default_web_client_id))
-                    .requestEmail().build();
+            //GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            //        .requestIdToken(getString(R.string.default_web_client_id))
+            //        .requestEmail().build();
 
 
         }

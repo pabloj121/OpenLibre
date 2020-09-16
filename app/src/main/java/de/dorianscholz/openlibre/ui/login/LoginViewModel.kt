@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import android.util.Patterns
-import de.dorianscholz.openlibre.data.LoginRepository
-import de.dorianscholz.openlibre.data.Result
+import de.dorianscholz.openlibre.ui.data.LoginRepository
+import de.dorianscholz.openlibre.ui.data.Result
 
 import de.dorianscholz.openlibre.R
 
@@ -40,7 +40,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 
     // A placeholder username validation check
     private fun isUserNameValid(username: String): Boolean {
-        return if (username.contains("@")) {
+        return if (username.contains('@')) {
             Patterns.EMAIL_ADDRESS.matcher(username).matches()
         } else {
             username.isNotBlank()

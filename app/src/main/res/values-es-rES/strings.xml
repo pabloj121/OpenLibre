@@ -9,6 +9,12 @@
     <string name="fragment_title_log">Log</string>
     <string name="fragment_title_agenda">Agenda</string>
 
+    <!-- Added-->
+    <string name="greeting">Hola</string>
+
+    <!-- General error -->
+    <string name="error">Ocurrió un error</string>
+
     <string name="action_show_last_scan">Último Escaneo</string>
     <string name="action_show_all_data">All Data</string>
     <string name="action_enter_blood_glucose">Enter BGL</string>
