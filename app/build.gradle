@@ -39,19 +39,19 @@ dependencies {
     })
     implementation "io.realm:android-adapters:2.1.0"
     implementation "com.github.PhilJay:MPAndroidChart:v3.0.2"
-    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation "commons-io:commons-io:2.5"
     implementation "org.apache.commons:commons-math3:3.6.1"
-    implementation "com.google.code.gson:gson:2.8.0"
+    implementation "com.google.code.gson:gson:2.8.5"
     testImplementation "junit:junit:4.12"
     debugImplementation "com.facebook.stetho:stetho:1.5.0"
     debugImplementation "com.uphyca:stetho_realm:2.0.1"
     implementation "com.faendir:acra:4.9.3-SNAPSHOT"
     implementation "io.tidepool.api:tidepool-api-lib-debug@aar"
-    implementation "com.android.volley:volley:1.1.0"
+    implementation "com.android.volley:volley:1.1.1"
     implementation "com.jayway.awaitility:awaitility:1.7.0"
     //implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"

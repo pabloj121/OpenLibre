@@ -439,6 +439,12 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
             if (auth.getCurrentUser() != null){
                 Toast.makeText(this, "The user is already logged in", Toast.LENGTH_SHORT).show();
+
+                /*
+                * Intent intent = new Intent(this, MainActivity.class);
+                  startActivity(intent);
+                  finish();
+                * */
             } else {
                 Intent intent = new Intent(this, LoginActivity.class);
 

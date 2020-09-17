@@ -63,16 +63,13 @@
         app:layout_constraintVertical_bias="0.119" />
 
     <!-- Revisar buttonSize ?? -->
+
     <com.google.android.gms.common.SignInButton
         android:id="@+id/google_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="124dp"
-        app:buttonSize="@dimen/fui_auth_method_button_width"
-        android:layout_marginRight="@dimen/fui_wrapper_padding_horiz"
-        android:layout_marginBottom="@dimen/fui_auth_method_button_width"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
         android:id="@+id/loading"
@@ -89,4 +86,5 @@
         app:layout_constraintStart_toStartOf="@+id/password"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.3" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
