@@ -12,9 +12,14 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -39,6 +44,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import de.dorianscholz.openlibre.R;
+import de.dorianscholz.openlibre.model.BloodGlucoseData;
 import de.dorianscholz.openlibre.model.GlucoseData;
 import de.dorianscholz.openlibre.model.RawTagData;
 import de.dorianscholz.openlibre.model.ReadingData;
@@ -251,11 +257,9 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             bloodGlucoseInputFragment.show(getSupportFragmentManager(), "enterglucose");
 
             // Controlar tamaño del historial que se va guardando en cada momento
-            //System.out.println(valor);
-            List<GlucoseData> history = mRealmProcessedData.where(GlucoseData.class).findAllSorted(GlucoseData.DATE,
-                    Sort.ASCENDING);
+            // List<BloodGlucoseData> history = mRealmProcessedData.where(BloodGlucoseData.class).findAllSorted(BloodGlucoseData.DATE, Sort.ASCENDING);
 
-            System.out.println("Tamaño del historial: " + history.size());
+            // System.out.println("Tamaño del historial: " + history.size());
 
             return true;
 
@@ -426,19 +430,8 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
         } else if ( id == R.id.action_google){
             // If logged in a previous time, the user does not need to log in again
-            /*
-            if (isLogged()){
-                Toast.makeText(this, "The user is already logged in", Toast.LENGTH_SHORT).show();
-            } else{
-                // Pantalla que muestre boton de inicio de sesión
-                Intent intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
-                return true;
-            }
-            */
-
             if (auth.getCurrentUser() != null){
-                Toast.makeText(this, "The user is already logged in", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.already_login, Toast.LENGTH_SHORT).show();
 
                 /*
                 * Intent intent = new Intent(this, MainActivity.class);
@@ -450,7 +443,6 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
                 startActivity(intent);
                 finish();
-
             }
 
         } else if (id == R.id.action_agenda){
@@ -463,6 +455,7 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
 
         }
+
 
         return super.onOptionsItemSelected(item);
     }

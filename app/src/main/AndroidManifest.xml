@@ -8,7 +8,9 @@
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- To allow the actions related to the calendar -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
     <!--
  If we add bar or restaurants, the position will be neccesary !
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
@@ -26,8 +28,28 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Splash">
         <activity
+            android:name=".ui.AIActivity"
+            android:label="@string/title_activity_a_i"></activity>
+        <activity
+            android:name=".ui.MainActivity2"
+            android:label="@string/title_activity_main2"
+            android:theme="@style/AppTheme.Splash.NoActionBar" />
+        <activity
+            android:name=".ui.ItemListActivity"
+            android:label="@string/title_item_list"
+            android:theme="@style/AppTheme.Splash.NoActionBar" />
+        <activity
+            android:name=".ui.ItemDetailActivity"
+            android:label="@string/title_item_detail"
+            android:parentActivityName=".ui.ItemListActivity"
+            android:theme="@style/AppTheme.Splash.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.dorianscholz.openlibre.ui.ItemListActivity" />
+        </activity>
+        <activity
             android:name=".ui.login.LoginActivity"
-            android:label="@string/title_activity_login"></activity>
+            android:label="@string/title_activity_login" />
         <activity
             android:name=".ui.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"

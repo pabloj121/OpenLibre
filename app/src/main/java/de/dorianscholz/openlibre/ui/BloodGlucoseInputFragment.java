@@ -38,6 +38,9 @@ public class BloodGlucoseInputFragment extends DialogFragment {
         realmUserData.copyToRealmOrUpdate(new BloodGlucoseData(date, bloodGlucoseLevel));
         realmUserData.commitTransaction();
         realmUserData.close();
+
+        // google data base
+
     }
 
     @Override
@@ -55,6 +58,7 @@ public class BloodGlucoseInputFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
+        Float control;
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_blood_glucose_input, null);
         final EditText editTextGlucose = (EditText) view.findViewById(R.id.edit_text_glucose);
 
@@ -72,6 +76,7 @@ public class BloodGlucoseInputFragment extends DialogFragment {
                 long date = new Date().getTime();
                 saveBloodGlucoseLevel(date, bloodGlucoseLevel);
                 dialog.dismiss();
+                System.out.println("Glucose: " + editTextGlucose);
             }
         });
         alertDialogBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
