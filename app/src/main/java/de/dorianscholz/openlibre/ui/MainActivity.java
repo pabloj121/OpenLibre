@@ -432,29 +432,36 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             // If logged in a previous time, the user does not need to log in again
             if (auth.getCurrentUser() != null){
                 Toast.makeText(this, R.string.already_login, Toast.LENGTH_SHORT).show();
+                mViewPager.setCurrentItem(getResources().getInteger(R.integer.viewpager_page_fragment_agenda));
 
-                /*
-                * Intent intent = new Intent(this, MainActivity.class);
-                  startActivity(intent);
-                  finish();
-                * */
-            } else {
+                // CAMBIAR !!!
+                // AgendaFragment AgendaFragment = de.dorianscholz.openlibre.ui.AgendaFragment.newInstance();
+                // BloodGlucoseInputFragment();
+                // AgendaFragment.show(getSupportFragmentManager(), "");
+                // new AgendaFragment().show(getSupportFragmentManager(), "agenda");
+                AgendaFragment.newInstance();
+            } else { // not logged
                 Intent intent = new Intent(this, LoginActivity.class);
 
                 startActivity(intent);
                 finish();
             }
 
-        } else if (id == R.id.action_agenda){
-            // Desplegar opciones con agenda, conectar previamente con Google... !
+        } else if (id== R.id.action_prediction){
+            Intent intent = new Intent(this, AlgorithmActivity.class);
+            startActivity(intent);
 
-            // Ha iniciado sesión con Google ?
+            return true;
+        } else if ( id == R.id.action_complete_glucose_data) {
+            GlucoseFormFragment form =  GlucoseFormFragment.newInstance();
+            form.show(getSupportFragmentManager(), "glucoseformfragment");
+            return true;
+        }
+
+        // Ha iniciado sesión con Google
             //GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             //        .requestIdToken(getString(R.string.default_web_client_id))
             //        .requestEmail().build();
-
-
-        }
 
 
         return super.onOptionsItemSelected(item);

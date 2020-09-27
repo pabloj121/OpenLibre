@@ -77,8 +77,8 @@ class ExportFragment : DialogFragment() {
         return dialogView
     }
 
-    // the return type was AlertDialog
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+    // the working return type was Dialog !
+    override fun onCreateDialog(savedInstanceState: Bundle?): AlertDialog {
         dialogView = requireActivity().layoutInflater.inflate(R.layout.fragment_export, null)
 
         spinner_data_type.adapter = context?.let { ArrayAdapter(it, android.R.layout.simple_spinner_dropdown_item, DataTypes.values()) }

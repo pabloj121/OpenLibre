@@ -155,5 +155,7 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="ai_study">AI Study</string>
+    <string name="add_information"><b>Add information</b></string>
 
 </resources>

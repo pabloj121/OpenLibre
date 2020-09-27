@@ -5,10 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentManager
-import de.dorianscholz.openlibre.OpenLibre
+import androidx.fragment.app.DialogFragment
 import de.dorianscholz.openlibre.R
-import io.realm.Realm
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -17,33 +15,28 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [AgendaFragment.newInstance] factory method to
+ * Use the [GlucoseFormFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class AgendaFragment : Fragment() {
+class GlucoseFormFragment : DialogFragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private var mRealmProcessedData: Realm? = null
 
-    // Completar?!
-    fun AgendaFragment() {}
+    fun GlucoseFormFragment() {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mRealmProcessedData = Realm.getInstance(OpenLibre.realmConfigProcessedData)
-        /*
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        */
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_agenda, container, false)
+        return inflater.inflate(R.layout.fragment_glucose_form, container, false)
     }
 
     companion object {
@@ -53,26 +46,13 @@ class AgendaFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment AgendaFragment.
+         * @return A new instance of fragment GlucoseFormFragment.
          */
         // TODO: Rename and change types and number of parameters
-
         @JvmStatic
-        fun newInstance(): AgendaFragment? {
-                /* AgendaFragment().apply {
-                        arguments = Bundle().apply {
-                            putString(ARG_PARAM1, param1)
-                            putString(ARG_PARAM2, param2) }}  */
-            return AgendaFragment()
+        fun newInstance(): GlucoseFormFragment {
+            return GlucoseFormFragment()
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-    }
-
-
-    fun show(supportFragmentManager: FragmentManager, s: String) {
 
     }
 }

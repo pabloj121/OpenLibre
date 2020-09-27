@@ -21,6 +21,7 @@ import de.dorianscholz.openlibre.OpenLibre;
 import de.dorianscholz.openlibre.R;
 import de.dorianscholz.openlibre.model.RawTagData;
 import de.dorianscholz.openlibre.model.ReadingData;
+import de.dorianscholz.openlibre.ui.ExportFragment;
 import de.dorianscholz.openlibre.ui.MainActivity;
 import io.realm.Realm;
 
@@ -100,6 +101,9 @@ public class NfcVReaderTask extends AsyncTask<Tag, Void, Boolean> {
                 mainActivity.getResources().getString(R.string.reading_sensor_success),
                 Toast.LENGTH_SHORT
         ).show();
+
+        // Show screen in which you will include some data
+        // new FormFragment().show(getSupportFragmentManager(), "form");
 
         // FIXME: the new data should be propagated transparently through the database backend
         mainActivity.onNfcReadingFinished(processRawData(sensorTagId, data));

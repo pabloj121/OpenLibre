@@ -60,4 +60,5 @@
     <string name="export">Export</string>
     <string name="greeting">Hallo</string>
     <string name="error">Ein Fehler aufgetreten ist</string>
+    <string name="add_information">Informationen hinzufügen</string>
 </resources>

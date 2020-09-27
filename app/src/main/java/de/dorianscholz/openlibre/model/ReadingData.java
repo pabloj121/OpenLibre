@@ -27,7 +27,6 @@ public class ReadingData extends RealmObject {
     public static final String TREND = "trend";
     public static final String HISTORY = "history";
 
-
     public static final int numHistoryValues = 32;
     public static final int historyIntervalInMinutes = 15;
     public static final int numTrendValues = 16;

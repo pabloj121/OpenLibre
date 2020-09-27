@@ -109,6 +109,8 @@ public class OpenLibre extends Application {
                 }
             }
 
+            System.out.println("Ruta: '" + openLibreDataPath.toString() + "'");
+
             // if no existing realm was found, find a storage path that we can actually create a realm in
             if (openLibreDataPath == null) {
                 for (String pathName : dataPathNames) {
