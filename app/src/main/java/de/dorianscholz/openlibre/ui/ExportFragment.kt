@@ -55,7 +55,7 @@ class ExportFragment : DialogFragment() {
 
     }
 
-    private val dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
+    private var dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
     private lateinit var dialogView: View
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -113,12 +113,17 @@ class ExportFragment : DialogFragment() {
         super.onDestroyView()
     }
 
+    // In the fourth line below: dateTimeFormat = ...
+    // I intend to update the date to show the corret in the ExportFragment
+    // I have to test that addition
     fun updateProgress(progress: Double, currentDate: Date?) {
         activity?.runOnUiThread {
             if (ExportTask.isRunning) {
+                dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
                 button_export_or_cancel.text = getString(R.string.cancel)
                 pb_export.visibility = View.VISIBLE
                 tv_export_status.visibility = View.VISIBLE
+
                 pb_export.progress = (100 * progress).toInt()
                 tv_export_status.text =
                         if (currentDate != null) String.format(getString(R.string.export_until), dateTimeFormat.format(currentDate))

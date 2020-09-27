@@ -57,11 +57,13 @@ class LogRecyclerViewAdapter
             holder.itemView.setVisibility(View.GONE);
             return;
         }
+
         if (readingData.getTrend().size() == 0) {
             Log.e(LOG_ID, "No trend data at position: " + position);
             holder.itemView.setVisibility(View.GONE);
             return;
         }
+
         holder.itemView.setVisibility(View.VISIBLE);
         PredictionData predictedGlucose = new PredictionData(readingData.getTrend());
         holder.readingData = readingData;
