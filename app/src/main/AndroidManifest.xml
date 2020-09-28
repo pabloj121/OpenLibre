@@ -20,21 +20,17 @@
         android:name="android.hardware.nfc"
         android:required="true" />
 
+    <!-- In the previous release: android:theme="@style/AppTheme.Splash" !
+        Por eso ahora se ve blanco y no azul -->
     <application
         android:name=".OpenLibre"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.Splash">
+        android:theme="@style/Theme.MaterialComponents.Light">
+
         <activity android:name=".ui.AlgorithmActivity"></activity>
-        <activity
-            android:name=".ui.AIActivity"
-            android:label="@string/title_activity_a_i" />
-        <activity
-            android:name=".ui.MainActivity2"
-            android:label="@string/title_activity_main2"
-            android:theme="@style/AppTheme.Splash.NoActionBar" />
         <activity
             android:name=".ui.ItemListActivity"
             android:label="@string/title_item_list"

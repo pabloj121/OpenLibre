@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
@@ -85,11 +86,14 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
     private FirebaseAuth auth;
     private boolean logged = false;
+    private Date initial_date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
+
+        initial_date = (Date) Calendar.getInstance().getTime();
 
         mRealmRawData = Realm.getInstance(realmConfigRawData);
         mRealmProcessedData = Realm.getInstance(realmConfigProcessedData);
@@ -448,13 +452,20 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             }
 
         } else if (id== R.id.action_prediction){
+            List<GlucoseData> history = mRealmProcessedData.where(GlucoseData.class).
+                    equalTo(GlucoseData.IS_TREND_DATA, false).
+                    findAllSorted(GlucoseData.DATE, Sort.ASCENDING);
+
             Intent intent = new Intent(this, AlgorithmActivity.class);
+
+            // Tengo que pasarle a la activity las opciones de menú
             startActivity(intent);
 
             return true;
         } else if ( id == R.id.action_complete_glucose_data) {
             GlucoseFormFragment form =  GlucoseFormFragment.newInstance();
             form.show(getSupportFragmentManager(), "glucoseformfragment");
+
             return true;
         }
 

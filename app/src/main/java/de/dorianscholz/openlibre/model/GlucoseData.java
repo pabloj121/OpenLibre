@@ -42,13 +42,14 @@ public class GlucoseData extends RealmObject implements Comparable<GlucoseData> 
         this(sensor, ageInSensorMinutes, timezoneOffsetInMinutes, glucoseLevelRaw, isTrendData, sensor.getStartDate() + TimeUnit.MINUTES.toMillis(ageInSensorMinutes));
     }
 
+    // In the previous release, it was written Locale.US in both cases of the "if-else" statement !
     public static String generateId(SensorData sensor, int ageInSensorMinutes, boolean isTrendData, int glucoseLevelRaw) {
         if (isTrendData) {
             // a trend data value for a specific time is not fixed in its value, but can change on the next reading
             // so the trend id also includes the glucose value itself, so the previous reading's data are not overwritten
-            return String.format(Locale.US, "trend_%s_%05d_%03d", sensor.getId(), ageInSensorMinutes, glucoseLevelRaw);
+            return String.format(Locale.getDefault(), "trend_%s_%05d_%03d", sensor.getId(), ageInSensorMinutes, glucoseLevelRaw);
         } else {
-            return String.format(Locale.US, "history_%s_%05d", sensor.getId(), ageInSensorMinutes);
+            return String.format(Locale.getDefault(), "history_%s_%05d", sensor.getId(), ageInSensorMinutes);
         }
     }
 

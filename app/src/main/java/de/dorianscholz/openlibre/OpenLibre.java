@@ -3,9 +3,12 @@ package de.dorianscholz.openlibre;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
@@ -86,6 +89,7 @@ public class OpenLibre extends Application {
         GLUCOSE_TARGET_MAX = Float.parseFloat(settings.getString("pref_glucose_target_max", Float.toString(GLUCOSE_TARGET_MAX)));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static void setupRealm(Context context) {
         // get data path from settings
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
@@ -97,6 +101,7 @@ public class OpenLibre extends Application {
         } else {
             final ArrayList<String> dataPathNames = new ArrayList<>();
             dataPathNames.add(new File(Environment.getExternalStorageDirectory().getPath(), "openlibre").toString());
+            // Revisar siguiente línea... tenía marcas rojas !
             dataPathNames.add(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString());
             dataPathNames.add(context.getFilesDir().toString());
 

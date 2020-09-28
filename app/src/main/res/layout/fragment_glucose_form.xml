@@ -12,11 +12,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="25sp"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"/>
     <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:scrollbarSize="@dimen/activity_vertical_margin"
         android:background="?android:attr/listDivider" />
 
     <!-- Horario de comer -->
@@ -116,7 +118,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="@string/add_information"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:theme="@style/Widget.MaterialComponents.Button"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
         android:typeface="sans" />
 
 
