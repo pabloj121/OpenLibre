@@ -33,15 +33,20 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
+import com.opencsv.CSVReader;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
@@ -99,9 +104,13 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
     private FirebaseAuth auth;
     private boolean logged = false;
-    //private Date initial_date;
+
     private LocalDate startDate;
     private String startDateString;
+
+    TextView importPathFile;
+    Button filePicker;
+    Intent importFileIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,6 +167,19 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         if (! Python.isStarted()) {
             Python.start(new AndroidPlatform(this));
         }
+
+        importPathFile = (TextView) findViewById(R.id.importPathFile);
+        filePicker = (Button) findViewById(R.id.import_button);
+
+        filePicker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                importFileIntent = new Intent(importFileIntent.ACTION_GET_CONTENT);
+                importFileIntent.setType("*/*"); // ???
+                // 99 is an ID that I know is unused
+                startActivityForResult(importFileIntent, 99);
+            }
+        });
     }
 
     @Override
@@ -538,7 +560,6 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
     public void export(View view){
         // Tratar los datos antes de escribirlos
-
         List<ReadingData> history2 = mRealmProcessedData.where(ReadingData.class).
                 findAllSorted(ReadingData.DATE, Sort.ASCENDING);
 
@@ -590,6 +611,54 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         }
     }
 
+    public void importCSV(String path) throws IOException {
+
+        // Antes de nada, comprobar que el nombre acaba en CSV
+
+
+        CSVReader reader = null;
+        try {
+            reader = new CSVReader(new FileReader(path));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        String [] nextLine;
+        while ((nextLine = reader.readNext()) != null) {
+            // nextLine[] is an array of values from the line
+            System.out.println(nextLine[0] + nextLine[1] + "etc...");
+
+        }
+
+        try{
+            reader.close();
+        }   catch (NullPointerException e){
+            e.printStackTrace();
+        }
+
+        /*
+        * CSVReader reader = new CSVReader(new FileReader("emps.csv"), ',');
+
+		List<Employee> emps = new ArrayList<Employee>();
+
+		// read line by line
+		String[] record = null;
+
+		while ((record = reader.readNext()) != null) {
+			Employee emp = new Employee();
+			emp.setId(record[0]);
+			emp.setName(record[1]);
+			emp.setAge(record[2]);
+			emp.setCountry(record[3]);
+			emps.add(emp);
+		}
+
+		System.out.println(emps);
+
+		reader.close();
+        * */
+
+    }
 
     public void onNfcReadingFinished(ReadingData readingData) {
         mLastScanTime = new Date().getTime();
@@ -660,6 +729,13 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             case PENDING_INTENT_TECH_DISCOVERED:
                 // Resolve the foreground dispatch intent:
                 resolveIntent(data);
+                break;
+            case 99: // The ImportFile Action ID
+                if (requestCode == RESULT_OK){
+                    String path = data.getData().getPath();
+                    importPathFile.setText(path);
+                    importCSV(path);
+                }
                 break;
         }
     }

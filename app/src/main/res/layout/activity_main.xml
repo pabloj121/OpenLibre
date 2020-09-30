@@ -50,10 +50,31 @@
         android:layout_gravity="bottom|right"
         android:contentDescription="Este boton cumple la función de exportar datos en un CSV"
         android:text="@string/export_data"
+        android:textColor="@color/white"
         app:icon="@drawable/baseline_import_export_white_18dp"
-        app:iconTint="@color/colorPrimary"
+        android:backgroundTint="@color/colorPrimary"
         />
 
+    <TextView
+        android:id="@+id/importPathFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/import_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:onClick="export"
+        android:visibility="visible"
+        android:layout_gravity="bottom|left"
+        android:contentDescription="Este boton cumple la función de importar datos en un CSV"
+        android:text="@string/import_data"
+        android:textColor="@color/white"
+        app:icon="@drawable/baseline_import_export_white_18dp"
+        android:backgroundTint="@color/colorPrimary"
+        />
     <!--
     android:text="@string/export_data"
     app:srcCompat="@drawable/baseline_import_export_black_18dp"

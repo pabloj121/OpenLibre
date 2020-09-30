@@ -131,6 +131,7 @@
     <string name="export_output_format_json">JSON</string>
     <string name="export_output_format_csv">CSV</string>
     <string name="add_information">Añadir información</string>
+    <string name="import_data">Importar datos</string>
 
 
 </resources>

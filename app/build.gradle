@@ -98,14 +98,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:19.4.0'
     implementation 'com.firebaseui:firebase-ui-auth:6.3.0'
     implementation 'com.google.android.gms:play-services-auth:18.1.0'
-
     // Required only if Facebook login support is required
     // implementation 'com.facebook.android:facebook-android-sdk:4.x'
-
     // Calendar View
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.10'
-    //implementation 'com.github.kizitonwose:CalendarView:<0.4.4>'
     implementation 'com.github.kizitonwose:CalendarView:0.4.4'
+    implementation 'com.opencsv:opencsv:4.6'
 }
 
 // include user specific build tasks
