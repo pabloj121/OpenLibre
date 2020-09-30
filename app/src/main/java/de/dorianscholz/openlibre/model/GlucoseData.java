@@ -27,6 +27,13 @@ public class GlucoseData extends RealmObject implements Comparable<GlucoseData> 
     private int glucoseLevelRaw = -1; // in mg/l = 0.1 mg/dl
     private long date;
     private int timezoneOffsetInMinutes;
+    // New fields
+    private int horario_comer = 0;  // By default
+    private int food_type = 0;      // By default
+    private boolean risk = false;
+    private boolean stress = false;
+    private boolean sport = false; // horario_comer, food_type, risk, stresss, sport
+    private boolean ascendent_trend = false;
 
     public GlucoseData() {}
     public GlucoseData(SensorData sensor, int ageInSensorMinutes, int timezoneOffsetInMinutes, int glucoseLevelRaw, boolean isTrendData, long date) {
@@ -123,7 +130,6 @@ public class GlucoseData extends RealmObject implements Comparable<GlucoseData> 
         return date;
     }
 
-
     public int getTimezoneOffsetInMinutes() {
         return timezoneOffsetInMinutes;
     }
@@ -139,4 +145,25 @@ public class GlucoseData extends RealmObject implements Comparable<GlucoseData> 
     public String getId() {
         return id;
     }
+
+    // Getters and Setters Methods for the new fields
+    public int getHorario_comer() { return horario_comer; }
+
+    public void setHorario_comer(int horario_comer) { this.horario_comer = horario_comer; }
+
+    public int getFood_type(){ return food_type;    }
+
+    public void setFood_type(int ft){ food_type = ft; }
+
+    public boolean isRisk() { return risk; }
+
+    public void setRisk(){ risk = true; }
+
+    public boolean isStress() { return stress; }
+
+    public void setStress(){ stress = true; }
+
+    public boolean isSport() { return sport; }
+
+    public void setSport(){ sport = true; }
 }

@@ -26,6 +26,7 @@
         <!-- android:layout_height="40dp" -->
         </androidx.appcompat.widget.Toolbar>
 
+
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
@@ -37,6 +38,25 @@
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:onClick="export"
+        android:visibility="visible"
+        android:layout_gravity="bottom|right"
+        android:contentDescription="Este boton cumple la función de exportar datos en un CSV"
+        android:text="@string/export_data"
+        app:icon="@drawable/baseline_import_export_white_18dp"
+        app:iconTint="@color/colorPrimary"
+        />
+
+    <!--
+    android:text="@string/export_data"
+    app:srcCompat="@drawable/baseline_import_export_black_18dp"
+    -->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

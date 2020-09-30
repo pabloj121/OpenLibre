@@ -287,6 +287,7 @@ object ExportTask {
     private fun getTimezoneName(timezoneOffsetInMinutes: Int): String {
         val offsetSign = "%+d".format(timezoneOffsetInMinutes)[0]
 
+        // Revisar el Locale !
         val of = SimpleDateFormat("HH:mm", Locale.US)
         of.timeZone = TimeZone.getTimeZone("UTC")
         val timezoneOffsetString = of.format(Date(TimeUnit.MINUTES.toMillis(abs(timezoneOffsetInMinutes).toLong())))

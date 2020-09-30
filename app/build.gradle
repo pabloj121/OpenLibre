@@ -5,6 +5,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: "realm-android"
 // To add Firebase
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.chaquo.python'        // To add the Python interpreter
 
 android {
     compileSdkVersion 30
@@ -19,6 +20,19 @@ android {
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         project.ext.set("archivesBaseName", defaultConfig.applicationId + "-" + defaultConfig.versionName);
+        ndk {
+            abiFilters "armeabi-v7a", "x86"
+        }
+        // Comprobar que la ruta funciona correctamente
+
+        python{
+            buildPython "C:\\Users\\pablo\\anaconda3\\python.exe"
+            /*
+            pip{
+                install "tensorflow"
+                install "pandas"
+            }*/
+        }
     }
     buildTypes {
         release {
@@ -36,6 +50,12 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    // The include the directory in which Python code is going to be allocated
+    sourceSets{
+        main{
+            python.srcDir "C:\\Users\\pablo\\Desktop\\Pablo\\TFG\\Proyecto\\OpenLibre\\TensorFlow"
+        }
     }
 }
 

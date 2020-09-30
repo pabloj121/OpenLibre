@@ -3,11 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="de.dorianscholz.openlibre.ui.MainActivity">
     <!--android:icon="@drawable/baseline_calendar_today_white_18dp"-->
+    <!--
     <item
         android:id="@+id/action_agenda"
         android:title="Agenda"
         android:icon="@drawable/baseline_calendar_today_white_18dp"
         app:showAsAction="always" />
+    -->
+
     <item
         android:id="@+id/action_google"
         android:title="Log in with Google"

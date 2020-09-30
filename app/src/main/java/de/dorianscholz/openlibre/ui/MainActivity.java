@@ -5,15 +5,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
+
+import androidx.annotation.RequiresPermission;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -26,6 +32,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,12 +41,17 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -56,6 +68,7 @@ import de.dorianscholz.openlibre.ui.login.LoginActivity;
 
 import de.dorianscholz.openlibre.ui.login.LoginActivityKt;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -86,14 +99,18 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
     private FirebaseAuth auth;
     private boolean logged = false;
-    private Date initial_date;
+    //private Date initial_date;
+    private LocalDate startDate;
+    private String startDateString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
 
-        initial_date = (Date) Calendar.getInstance().getTime();
+        // initial_date = (Date) Calendar.getInstance().getTime();
+        startDate = LocalDate.now();
+        startDateString = startDate.getDayOfMonth() + "/" + startDate.getMonth() + "/" + startDate.getYear();
 
         mRealmRawData = Realm.getInstance(realmConfigRawData);
         mRealmProcessedData = Realm.getInstance(realmConfigProcessedData);
@@ -134,6 +151,12 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         } else {
             Log.e(LOG_ID,"No NFC adapter found!");
             Toast.makeText(this, getResources().getString(R.string.error_nfc_device_not_supported), Toast.LENGTH_LONG).show();
+        }
+
+        // "context" must be an Activity, Service or Application object from your app.
+        // Its necessary to make some tests !
+        if (! Python.isStarted()) {
+            Python.start(new AndroidPlatform(this));
         }
     }
 
@@ -438,11 +461,9 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
                 Toast.makeText(this, R.string.already_login, Toast.LENGTH_SHORT).show();
                 mViewPager.setCurrentItem(getResources().getInteger(R.integer.viewpager_page_fragment_agenda));
 
-                // CAMBIAR !!!
-                // AgendaFragment AgendaFragment = de.dorianscholz.openlibre.ui.AgendaFragment.newInstance();
-                // BloodGlucoseInputFragment();
-                // AgendaFragment.show(getSupportFragmentManager(), "");
-                // new AgendaFragment().show(getSupportFragmentManager(), "agenda");
+
+                Toast.makeText(this, "ruta de archivo guardaddo: " + openLibreDataPath.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+
                 AgendaFragment.newInstance();
             } else { // not logged
                 Intent intent = new Intent(this, LoginActivity.class);
@@ -456,10 +477,47 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
                     equalTo(GlucoseData.IS_TREND_DATA, false).
                     findAllSorted(GlucoseData.DATE, Sort.ASCENDING);
 
-            Intent intent = new Intent(this, AlgorithmActivity.class);
+            // Procesamiento de datos
 
-            // Tengo que pasarle a la activity las opciones de menú
-            startActivity(intent);
+            // Fecha suficiente ??
+            /*
+            Date currentDate = (Date) Calendar.getInstance().getTime();
+            if(currentDate.compareTo(initial_date) < 0){}
+            */
+
+            LocalDate localDate = LocalDate.now();
+            String current = localDate.getDayOfMonth() + "/" + localDate.getMonth() + "/" + localDate.getYear();
+
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+            Date firstDate = null;
+            try {
+                firstDate = sdf.parse(startDateString);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Date secondDate = null;
+            try {
+                secondDate = sdf.parse(current);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
+            long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+            // Each five days, the model trains with the new data and is rebuilt
+            if (diff > 5){
+                // El modelo se debe entrenar con los datos nuevos
+
+
+
+
+                Intent intent = new Intent(this, AlgorithmActivity.class);
+                // Tengo que pasarle a la activity las opciones de menú
+                startActivity(intent);
+            }else {
+                Toast.makeText(this, "Aún no hay información suficiente", Toast.LENGTH_SHORT);
+            }
 
             return true;
         } else if ( id == R.id.action_complete_glucose_data) {
@@ -476,6 +534,60 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void export(View view){
+        // Tratar los datos antes de escribirlos
+
+        List<ReadingData> history2 = mRealmProcessedData.where(ReadingData.class).
+                findAllSorted(ReadingData.DATE, Sort.ASCENDING);
+
+        StringBuilder data = new StringBuilder();
+
+        // Cabecera de la función !
+        data.append("id,timezone,date,glucose, horario_comer,food_type,sport,trend,stress,risk\n");
+        // comprobar fecha  5 días!
+        for (ReadingData read: history2) {
+            RealmList<GlucoseData> trend = read.getTrend();
+
+            for (GlucoseData glucose: trend) {
+                data.append(glucose.getId() + "," + glucose.getTimezoneOffsetInMinutes() + "," + glucose.getDate() + ","
+                        + glucose.glucose() + "," + glucose.getHorario_comer() + "," + glucose.getFood_type() + "," +
+                        glucose.isSport() + "," + "," + glucose.isStress() + "," + glucose.isRisk() +
+                        glucose.isTrendData() + "\n");
+            }
+        }
+        /*
+        dataList += data.id
+        dataList += getTimezoneName(data.timezoneOffsetInMinutes)
+        dataList += formatDateTimeWithoutTimezone(date, data.timezoneOffsetInMinutes)
+
+        dataList += data.sensorAgeInMinutes
+        dataList += data.trend.map { it.glucose() }
+        dataList += DoubleArray(numTrendValues - data.trend.size).asList()
+        dataList += data.history.map { it.glucose() }
+        dataList += DoubleArray(numHistoryValues - data.history.size).asList()
+         */
+        try{
+            //saving the file into device
+            FileOutputStream out = openFileOutput("data.csv", Context.MODE_PRIVATE);
+            out.write((data.toString()).getBytes());
+            out.close();
+
+            //exporting
+            Context context = getApplicationContext();
+            File filelocation = new File(getFilesDir(), "data.csv");
+            Uri path = FileProvider.getUriForFile(context, "de.dorianscholz.openlibre.fileprovider", filelocation);
+            Intent fileIntent = new Intent(Intent.ACTION_SEND);
+            fileIntent.setType("text/csv");
+            fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Data");
+            fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            fileIntent.putExtra(Intent.EXTRA_STREAM, path);
+            startActivity(Intent.createChooser(fileIntent, "Send mail"));
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
 

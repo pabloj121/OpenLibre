@@ -105,6 +105,10 @@ public class OpenLibre extends Application {
             dataPathNames.add(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString());
             dataPathNames.add(context.getFilesDir().toString());
 
+            for (int i = 0; i< dataPathNames.size(); ++i){
+                System.out.println("Directorio " + i + " " + dataPathNames.get(i));
+            }
+
             // if data path is not saved in settings, search for existing realms
             for (String pathName : dataPathNames) {
                 if (new File(pathName, "data_raw.realm").exists()) {
@@ -113,8 +117,6 @@ public class OpenLibre extends Application {
                     break;
                 }
             }
-
-            System.out.println("Ruta: '" + openLibreDataPath.toString() + "'");
 
             // if no existing realm was found, find a storage path that we can actually create a realm in
             if (openLibreDataPath == null) {

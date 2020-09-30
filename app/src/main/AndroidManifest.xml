@@ -30,6 +30,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.Light">
 
+        <provider
+            android:authorities="de.dorianscholz.openlibre.fileprovider"
+            android:name="androidx.core.content.FileProvider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/provider_paths"/>
+        </provider>
+
         <activity android:name=".ui.AlgorithmActivity"></activity>
         <activity
             android:name=".ui.ItemListActivity"

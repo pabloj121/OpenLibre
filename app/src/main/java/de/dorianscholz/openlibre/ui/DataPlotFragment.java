@@ -292,6 +292,7 @@ public class DataPlotFragment extends Fragment
 
         mDataPlotView.findViewById(R.id.scan_data).setVisibility(View.VISIBLE);
 
+        // To obtain the last glucose control
         GlucoseData currentGlucose = trend.get(trend.size() - 1);
         TextView tv_currentGlucose = (TextView) mDataPlotView.findViewById(R.id.tv_glucose_current_value);
         tv_currentGlucose.setText(
@@ -318,6 +319,8 @@ public class DataPlotFragment extends Fragment
 
         // rotate trend arrow according to glucose prediction slope
         float rotationDegrees = -90f * max(-1f, min(1f, (float) (predictedGlucose.glucoseSlopeRaw / TREND_UP_DOWN_LIMIT)));
+
+        // I have to save the trend somewhere... !
         iv_predictionArrow.setRotation(rotationDegrees);
 
         // reduce trend arrow visibility according to prediction confidence
