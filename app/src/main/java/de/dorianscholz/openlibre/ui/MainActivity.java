@@ -1,14 +1,17 @@
 package de.dorianscholz.openlibre.ui;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.nfc.Tag;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
@@ -37,11 +40,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 import com.opencsv.CSVReader;
+
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -74,6 +80,7 @@ import de.dorianscholz.openlibre.ui.login.LoginActivity;
 import de.dorianscholz.openlibre.ui.login.LoginActivityKt;
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -105,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
     private FirebaseAuth auth;
     private boolean logged = false;
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     private LocalDate startDate;
     private String startDateString;
 
@@ -128,7 +137,10 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Obtain the FirebaseAuthentication instance.
         auth = FirebaseAuth.getInstance();
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         if (auth.getCurrentUser() != null) {
             // already signed in
@@ -566,7 +578,7 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         StringBuilder data = new StringBuilder();
 
         // Cabecera de la función !
-        data.append("id,timezone,date,glucose, horario_comer,food_type,sport,trend,stress,risk\n");
+        data.append("id,timezone,date,glucose,horario_comer,food_type,sport,trend,is_trend,stress,risk\n");
         // comprobar fecha  5 días!
         for (ReadingData read: history2) {
             RealmList<GlucoseData> trend = read.getTrend();
@@ -574,21 +586,11 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             for (GlucoseData glucose: trend) {
                 data.append(glucose.getId() + "," + glucose.getTimezoneOffsetInMinutes() + "," + glucose.getDate() + ","
                         + glucose.glucose() + "," + glucose.getHorario_comer() + "," + glucose.getFood_type() + "," +
-                        glucose.isSport() + "," + "," + glucose.isStress() + "," + glucose.isRisk() +
-                        glucose.isTrendData() + "\n");
+                        glucose.isSport() + "," + "," + "" + "," + glucose.isTrendData() + glucose.isStress() +
+                        "," + glucose.isRisk()+ "\n");
             }
         }
-        /*
-        dataList += data.id
-        dataList += getTimezoneName(data.timezoneOffsetInMinutes)
-        dataList += formatDateTimeWithoutTimezone(date, data.timezoneOffsetInMinutes)
 
-        dataList += data.sensorAgeInMinutes
-        dataList += data.trend.map { it.glucose() }
-        dataList += DoubleArray(numTrendValues - data.trend.size).asList()
-        dataList += data.history.map { it.glucose() }
-        dataList += DoubleArray(numHistoryValues - data.history.size).asList()
-         */
         try{
             //saving the file into device
             FileOutputStream out = openFileOutput("data.csv", Context.MODE_PRIVATE);
@@ -612,52 +614,114 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
     }
 
     public void importCSV(String path) throws IOException {
+        SensorData sensor = null;
+        ReadingData previousData = new ReadingData();
 
-        // Antes de nada, comprobar que el nombre acaba en CSV
+        System.out.println("path: " + path + "\n");
+        // To obtain the extension of the file to import
+        String extension = FilenameUtils.getExtension(path);
 
+        // The program is going to be able to import only CSV files,
+        // since it can only export data to CSV files
+        /* if (!extension.equals(format) ){ // != "csv"
+            // Check if it's a good option to stop the execution in this way !
+            Toast.makeText(this, R.string.incorrect_extension, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        */
+
+        // Uri uri = Uri.parse(path);
+        // File file = new File(uri.getPath());
+
+        // path  = "/sdcard/Download/data.csv";
+        // System.out.println("path: " + path + "\n");
+        // FileReader file_reader = new FileReader(path);
+        // CSVReader reader = new CSVReader(new FileReader(path));
 
         CSVReader reader = null;
+        path = "/storage/emulated/0/Download/data.csv";
+
         try {
             reader = new CSVReader(new FileReader(path));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
-        String [] nextLine;
-        while ((nextLine = reader.readNext()) != null) {
-            // nextLine[] is an array of values from the line
-            System.out.println(nextLine[0] + nextLine[1] + "etc...");
 
+        // copy data to database
+        Realm realmProcessedData = Realm.getInstance(realmConfigProcessedData);
+        // commit processed data into realm
+        realmProcessedData.beginTransaction();
+
+        String [] nextLine = null;
+        RealmList<GlucoseData> history = new RealmList<GlucoseData>(); // = previousData.getHistory();
+        RealmList<GlucoseData> trend = new RealmList<GlucoseData>(); // null;
+
+
+        // Header reading
+        try{
+            nextLine = reader.readNext();
+        } catch(NullPointerException e){
+            e.printStackTrace();
         }
+
+        // Data reading
+        while ((nextLine = reader.readNext()) != null) {
+            GlucoseData glucose = new GlucoseData();
+
+            // nextLine[] is an array of values from the line
+            //System.out.println(nextLine[0] + nextLine[1] + "etc...");
+            previousData.setId(nextLine[0]);
+            previousData.setTimezoneOffsetInMinutes(nextLine[1]);
+            previousData.setDate(nextLine[2]);
+
+            // "id,timezone,date,glucose,horario_comer,food_type,sport,trend,is_trend,stress,risk\n";
+            glucose.setId(nextLine[0]);
+            glucose.setTimezoneOffsetInMinutes(Integer.parseInt(nextLine[1]));
+            glucose.setDate(nextLine[2]);
+            glucose.setGlucoseLevelRaw(nextLine[3]);
+            glucose.setHorario_comer(nextLine[4]);
+            glucose.setFood_type(Integer.parseInt(nextLine[5]));
+            glucose.setSport(Boolean.parseBoolean(nextLine[6]));
+            glucose.setAscendent_trend(nextLine[7]);
+            glucose.setTrendData(nextLine[8]);
+            glucose.setStress(Boolean.parseBoolean(nextLine[9]));
+            glucose.setRisk(nextLine[10]);
+
+            // Its necessary to save the trend
+            if (glucose.isTrendData()){
+                trend.add(glucose);
+            }
+            else{
+                history.add(glucose);
+            }
+            // Se necesita un ProgressBar en esta acción !
+        }
+        previousData.setTrend(trend);
+        previousData.setHistory(history);
+
+        ReadingData readingData = realmProcessedData.copyToRealmOrUpdate(previousData);
+        realmProcessedData.commitTransaction();
+        realmProcessedData.close();
+
+        // copy data to database
+        Realm realmGlucoseData = Realm.getInstance(realmConfigProcessedData);
+        // commit processed data into realm
+        realmGlucoseData.beginTransaction();
+        List<GlucoseData> historyData = realmGlucoseData.copyToRealmOrUpdate(history);
+        realmGlucoseData.commitTransaction();
+        realmGlucoseData.close();
 
         try{
             reader.close();
+            // OK Toast.makeText(this, "Archivo leído con éxito", Toast.LENGTH_SHORT).show();
         }   catch (NullPointerException e){
             e.printStackTrace();
         }
 
         /*
         * CSVReader reader = new CSVReader(new FileReader("emps.csv"), ',');
-
-		List<Employee> emps = new ArrayList<Employee>();
-
-		// read line by line
-		String[] record = null;
-
-		while ((record = reader.readNext()) != null) {
-			Employee emp = new Employee();
-			emp.setId(record[0]);
-			emp.setName(record[1]);
-			emp.setAge(record[2]);
-			emp.setCountry(record[3]);
-			emps.add(emp);
-		}
-
-		System.out.println(emps);
-
-		reader.close();
-        * */
-
+        */
     }
 
     public void onNfcReadingFinished(ReadingData readingData) {
@@ -731,13 +795,59 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
                 resolveIntent(data);
                 break;
             case 99: // The ImportFile Action ID
-                if (requestCode == RESULT_OK){
-                    String path = data.getData().getPath();
-                    importPathFile.setText(path);
-                    importCSV(path);
+                if (resultCode == RESULT_OK){
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+                            String path = data.getData().getPath();
+                            importPathFile.setText(path);
+                            try {
+                                importCSV(path);
+                                Toast.makeText(this, R.string.import_finished, Toast.LENGTH_SHORT).show();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } // Read external storage has not been granted
+                        else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)){
+                                // ES NECESARIO COMPROBAR LOS REQUESTPERMISSIONS(..., 1); A VER SI EL 1 ES EL CORRECTO !
+                                    Toast.makeText(this, "Read external storage permission is " +
+                                            "needed to import the data", Toast.LENGTH_SHORT).show();
+
+                                // Request read external storage permission
+                                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                        } else{
+                            // You can directly ask for the permission.
+                            requestPermissions(new String[] { Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                        }
+                    }
+                }
+                else{
+                    Toast.makeText(this, "import fallido", Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
+    }
+
+    // @Override
+    public void onRequestPermissionsResults(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 1: // Read_external_storage as I defined
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission is granted. Continue the action or workflow
+                    // in your app.
+                }  else {
+                    // Explain to the user that the feature is unavailable because
+                    // the features requires a permission that the user has denied.
+                    // At the same time, respect the user's decision. Don't link to
+                    // system settings in an effort to convince the user to change
+                    // their decision.
+                }
+                return;
+        }
+        // Other 'case' lines to check for other
+        // permissions this app might request.
     }
 
     public boolean isLogged() {

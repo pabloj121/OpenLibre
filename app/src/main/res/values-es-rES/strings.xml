@@ -132,6 +132,7 @@
     <string name="export_output_format_csv">CSV</string>
     <string name="add_information">Añadir información</string>
     <string name="import_data">Importar datos</string>
-
+    <string name="incorrect_extension">La única extensión de archivo permitida es CSV</string>
+    <string name="import_finished">Importación finalizada</string>
 
 </resources>

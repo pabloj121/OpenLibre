@@ -62,4 +62,7 @@
     <string name="error">Ein Fehler aufgetreten ist</string>
     <string name="add_information">Informationen hinzufügen</string>
     <string name="import_data">Daten importieren</string>
+    <string name="incorrect_extension">Die einzige zulässige Dateierweiterung ist CSV</string>
+    <string name="import_finished">Import beendet</string>
+
 </resources>

@@ -158,5 +158,6 @@
     <string name="ai_study">AI Study</string>
     <string name="add_information"><b>Add information</b></string>
     <string name="import_data">Import data</string>
-
+    <string name="incorrect_extension">The only file extension allowed is CSV</string>
+    <string name="import_finished">Import finished</string>
 </resources>

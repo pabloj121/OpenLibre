@@ -320,7 +320,11 @@ public class DataPlotFragment extends Fragment
         // rotate trend arrow according to glucose prediction slope
         float rotationDegrees = -90f * max(-1f, min(1f, (float) (predictedGlucose.glucoseSlopeRaw / TREND_UP_DOWN_LIMIT)));
 
-        // I have to save the trend somewhere... !
+        // I have to test if the trend is saved!
+        if (rotationDegrees < 0){ // The other case is the default case
+            currentGlucose.setAscendent_trend("true");
+        }
+
         iv_predictionArrow.setRotation(rotationDegrees);
 
         // reduce trend arrow visibility according to prediction confidence

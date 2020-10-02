@@ -1,5 +1,7 @@
 package de.dorianscholz.openlibre.model;
 
+import android.text.BoringLayout;
+
 import androidx.annotation.NonNull;
 import java.text.DecimalFormat;
 import java.util.Locale;
@@ -84,6 +86,12 @@ public class GlucoseData extends RealmObject implements Comparable<GlucoseData> 
         return GLUCOSE_UNIT_IS_MMOL ? convertGlucoseRawToMMOL(raw) : convertGlucoseRawToMGDL(raw);
     }
 
+    public float convertNormalGlucoseToRawGlucose(String glucose){
+        float glucoseRaw = Float.parseFloat(glucose);
+
+        return GLUCOSE_UNIT_IS_MMOL? glucoseRaw * 10f * 18f : glucoseRaw * 10f;
+    }
+
     public static String getDisplayUnit() {
         return GLUCOSE_UNIT_IS_MMOL ? "mmol/l" : "mg/dl";
     }
@@ -94,6 +102,11 @@ public class GlucoseData extends RealmObject implements Comparable<GlucoseData> 
 
     public float glucose() {
         return convertGlucoseRawToDisplayUnit(glucoseLevelRaw);
+    }
+
+    public void setGlucoseLevelRaw(String glucose){
+        // FIXME : It's necessary to check the next operation !
+        glucoseLevelRaw = (int) convertNormalGlucoseToRawGlucose(glucose);
     }
 
     public static String formatValue(float value) {
@@ -118,6 +131,11 @@ public class GlucoseData extends RealmObject implements Comparable<GlucoseData> 
         this.sensor = sensor;
     }
 
+    // Check the result of Boolean.parseBoolean
+    public void setTrendData(String trend){
+        this.isTrendData = Boolean.parseBoolean(trend);
+    }
+
     public boolean isTrendData() {
         return isTrendData;
     }
@@ -128,6 +146,10 @@ public class GlucoseData extends RealmObject implements Comparable<GlucoseData> 
 
     public long getDate() {
         return date;
+    }
+
+    public void setDate(String date){
+        this.date = Long.parseLong(date);
     }
 
     public int getTimezoneOffsetInMinutes() {
@@ -146,10 +168,16 @@ public class GlucoseData extends RealmObject implements Comparable<GlucoseData> 
         return id;
     }
 
+    public void setId(String identification){
+        this.id = identification;
+    }
+
     // Getters and Setters Methods for the new fields
     public int getHorario_comer() { return horario_comer; }
 
     public void setHorario_comer(int horario_comer) { this.horario_comer = horario_comer; }
+
+    public void setHorario_comer(String horario_comer) { this.horario_comer = Integer.parseInt(horario_comer); }
 
     public int getFood_type(){ return food_type;    }
 
@@ -157,13 +185,18 @@ public class GlucoseData extends RealmObject implements Comparable<GlucoseData> 
 
     public boolean isRisk() { return risk; }
 
-    public void setRisk(){ risk = true; }
+    public void setRisk(String s){ risk = Boolean.parseBoolean(s); }
 
     public boolean isStress() { return stress; }
 
-    public void setStress(){ stress = true; }
+    public void setStress(boolean stress){ this.stress = stress; }
 
     public boolean isSport() { return sport; }
 
-    public void setSport(){ sport = true; }
+    public void setSport(boolean s){ this.sport = s; }
+
+    public boolean isAscendent_trend(){ return ascendent_trend; }
+
+    public void setAscendent_trend(String trend){ ascendent_trend = Boolean.parseBoolean(trend);}
+
 }

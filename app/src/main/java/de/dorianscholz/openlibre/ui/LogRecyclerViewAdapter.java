@@ -51,6 +51,7 @@ class LogRecyclerViewAdapter
     public void onBindViewHolder(LogRowViewHolder holder, int position) {
         ReadingData readingData;
         try {
+            // Check the method getData. It could be very useful in some cases !
             readingData = getData().get(position);
         } catch (NullPointerException e) {
             Log.e(LOG_ID, "Null pointer at position: " + position);

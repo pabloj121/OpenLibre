@@ -226,6 +226,10 @@ public class ReadingData extends RealmObject {
         return id;
     }
 
+    public void setId(String identification){
+        id = identification;
+    }
+
     public long getDate() {
         return date;
     }
@@ -234,12 +238,32 @@ public class ReadingData extends RealmObject {
         this.date = date;
     }
 
+    public void setDate(String d){
+        date = Long.parseLong(d);
+    }
+
+    public void setTrend(RealmList<GlucoseData> trend) {
+        this.trend = trend;
+    }
+
+    public void setHistory(RealmList<GlucoseData> history) {
+        this.history = history;
+    }
+
+    public void setTimezoneOffsetInMinutes(String timezone){
+        timezoneOffsetInMinutes = Integer.parseInt(timezone);
+    }
+
     public int getTimezoneOffsetInMinutes() {
         return timezoneOffsetInMinutes;
     }
 
     public void setTimezoneOffsetInMinutes(int timezoneOffsetInMinutes) {
         this.timezoneOffsetInMinutes = timezoneOffsetInMinutes;
+    }
+
+    public void setSensor(SensorData s){
+        sensor = s;
     }
 
     public RealmList<GlucoseData> getTrend() {

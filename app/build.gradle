@@ -6,6 +6,8 @@ apply plugin: "realm-android"
 // To add Firebase
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.chaquo.python'        // To add the Python interpreter
+// Apply the Crashlytics Gradle plugin
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 30
@@ -104,6 +106,13 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.10'
     implementation 'com.github.kizitonwose:CalendarView:0.4.4'
     implementation 'com.opencsv:opencsv:4.6'
+    implementation 'androidx.preference:preference-ktx:1.1.0'
+
+    // Recommended: Add the Firebase SDK for Google Analytics.
+    implementation 'com.google.firebase:firebase-analytics:17.5.0'
+
+    // Add the Firebase Crashlytics SDK.
+    implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
 }
 
 // include user specific build tasks
