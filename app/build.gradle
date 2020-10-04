@@ -25,15 +25,11 @@ android {
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
-        // Comprobar que la ruta funciona correctamente
-
         python{
-            buildPython "C:\\Users\\pablo\\anaconda3\\python.exe"
-            /*
             pip{
-                install "tensorflow"
                 install "pandas"
-            }*/
+                // install "tensorflow"
+            }
         }
     }
     buildTypes {
@@ -113,6 +109,8 @@ dependencies {
 
     // Add the Firebase Crashlytics SDK.
     implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
+    // Add Graphs to the APP
+    implementation 'com.jjoe64:graphview:4.2.2'
 }
 
 // include user specific build tasks

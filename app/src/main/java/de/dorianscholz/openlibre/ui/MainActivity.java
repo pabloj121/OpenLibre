@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
+import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -495,9 +496,6 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
                 Toast.makeText(this, R.string.already_login, Toast.LENGTH_SHORT).show();
                 mViewPager.setCurrentItem(getResources().getInteger(R.integer.viewpager_page_fragment_agenda));
 
-
-                Toast.makeText(this, "ruta de archivo guardaddo: " + openLibreDataPath.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-
                 AgendaFragment.newInstance();
             } else { // not logged
                 Intent intent = new Intent(this, LoginActivity.class);
@@ -511,49 +509,12 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
                     equalTo(GlucoseData.IS_TREND_DATA, false).
                     findAllSorted(GlucoseData.DATE, Sort.ASCENDING);
 
-            // Procesamiento de datos
+            trainModel(history);
 
-            // Fecha suficiente ??
-            /*
-            Date currentDate = (Date) Calendar.getInstance().getTime();
-            if(currentDate.compareTo(initial_date) < 0){}
-            */
-
-            LocalDate localDate = LocalDate.now();
-            String current = localDate.getDayOfMonth() + "/" + localDate.getMonth() + "/" + localDate.getYear();
-
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
-            Date firstDate = null;
-            try {
-                firstDate = sdf.parse(startDateString);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            Date secondDate = null;
-            try {
-                secondDate = sdf.parse(current);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
-            long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-
-            // Each five days, the model trains with the new data and is rebuilt
-            if (diff > 5){
-                // El modelo se debe entrenar con los datos nuevos
-
-
-
-
-                Intent intent = new Intent(this, AlgorithmActivity.class);
-                // Tengo que pasarle a la activity las opciones de menú
-                startActivity(intent);
-            }else {
-                Toast.makeText(this, "Aún no hay información suficiente", Toast.LENGTH_SHORT);
-            }
+            // Show results
 
             return true;
+
         } else if ( id == R.id.action_complete_glucose_data) {
             GlucoseFormFragment form =  GlucoseFormFragment.newInstance();
             form.show(getSupportFragmentManager(), "glucoseformfragment");
@@ -561,14 +522,67 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             return true;
         }
 
-        // Ha iniciado sesión con Google
-            //GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            //        .requestIdToken(getString(R.string.default_web_client_id))
-            //        .requestEmail().build();
-
-
         return super.onOptionsItemSelected(item);
     }
+
+    public boolean trainModel(List<GlucoseData> history){
+        // The model will be trained every seven days, halfway through the use of the sensor
+        LocalDate localDate = LocalDate.now();
+        String current = localDate.getDayOfMonth() + "/" + localDate.getMonth() + "/" + localDate.getYear();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+        Date firstDate = null;
+        try {
+            firstDate = sdf.parse(startDateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Date secondDate = null;
+        try {
+            secondDate = sdf.parse(current);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
+        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+        // Repasar si aqui va el mViewPager !
+        export(mViewPager);
+
+        // Each five days, the model trains with the new data and is rebuilt
+        // if (diff > 7){
+            // El modelo se debe entrenar con los datos nuevos
+            initPython();
+
+            // Maybe I have problems with path leght... !
+            Python python = Python.getInstance();
+            PyObject pythonFile = python.getModule("../../../../../../../../TensorFlow/TemplateModel.py");
+            // pythonFile
+
+
+            Intent intent = new Intent(this, AlgorithmActivity.class);
+
+            // Tengo que pasarle a la activity las opciones de menú
+            startActivity(intent);
+            return true;
+        /*
+        }else {
+            Toast.makeText(this, "Aún no hay información suficiente", Toast.LENGTH_SHORT);
+            return false;
+        }
+         */
+    }
+
+
+    public void initPython(){
+        // "context" must be an Activity, Service or Application object from your app.
+        if (! Python.isStarted()) {
+            Python.start(new AndroidPlatform(this));
+        }
+    }
+
 
     public void export(View view){
         // Tratar los datos antes de escribirlos
@@ -592,12 +606,12 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         }
 
         try{
-            //saving the file into device
+            // Saving the file into device
             FileOutputStream out = openFileOutput("data.csv", Context.MODE_PRIVATE);
             out.write((data.toString()).getBytes());
             out.close();
 
-            //exporting
+            // Exporting
             Context context = getApplicationContext();
             File filelocation = new File(getFilesDir(), "data.csv");
             Uri path = FileProvider.getUriForFile(context, "de.dorianscholz.openlibre.fileprovider", filelocation);
@@ -607,6 +621,8 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             fileIntent.putExtra(Intent.EXTRA_STREAM, path);
             startActivity(Intent.createChooser(fileIntent, "Send mail"));
+
+            // Toast.makeText(this, "Path of the file saved: " + openLibreDataPath.getAbsolutePath(), Toast.LENGTH_SHORT).show();
         }
         catch(Exception e){
             e.printStackTrace();
