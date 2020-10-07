@@ -20,31 +20,28 @@
         android:name="android.hardware.nfc"
         android:required="true" />
 
-    <!-- In the previous release: android:theme="@style/AppTheme.Splash" !
-        Por eso ahora se ve blanco y no azul -->
-    <!-- android:usesCleartextTraffic to solve an ACRA problem !-->
-    <!-- requestLegacyExternalStorage to solve the FileNotFoundException when Importing-->
     <application
         android:name=".OpenLibre"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.Light"
-        android:usesCleartextTraffic="true"
-        android:requestLegacyExternalStorage="true" >
+        android:usesCleartextTraffic="true">
+        <activity android:name=".service.SesnsorExpiresNotification"></activity>
 
         <provider
-            android:authorities="de.dorianscholz.openlibre.fileprovider"
             android:name="androidx.core.content.FileProvider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:authorities="de.dorianscholz.openlibre.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
-            android:name="android.support.FILE_PROVIDER_PATHS"
-            android:resource="@xml/provider_paths"/>
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name=".ui.AlgorithmActivity"></activity>
+        <activity android:name=".ui.AlgorithmActivity" />
         <activity
             android:name=".ui.ItemListActivity"
             android:label="@string/title_item_list"

@@ -160,4 +160,8 @@
     <string name="import_data">Import data</string>
     <string name="incorrect_extension">The only file extension allowed is CSV</string>
     <string name="import_finished">Import finished</string>
+    <string name="title_activity_reports">Reports</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="sensor_expires_soon">The sensor will soon expire</string>
 </resources>

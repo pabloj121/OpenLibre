@@ -7,8 +7,9 @@
     android:layout_height="70dp"
     android:layout_centerInParent="false"
     android:layout_centerVertical="false"
-    android:gravity="center">
-
+    android:gravity="center"
+    android:layout_margin="@dimen/text_margin">
+    <!-- Revisar el margin !-->
     <LinearLayout
         android:orientation="vertical"
         android:layout_height="match_parent"

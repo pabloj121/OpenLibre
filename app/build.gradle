@@ -28,7 +28,7 @@ android {
         python{
             pip{
                 install "pandas"
-                // install "tensorflow"
+                install "tensorflow"
             }
         }
     }
@@ -111,6 +111,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
     // Add Graphs to the APP
     implementation 'com.jjoe64:graphview:4.2.2'
+
+    implementation 'com.google.firebase:firebase-ml-model-interpreter:22.0.4'
+    implementation 'org.tensorflow:tensorflow-lite:2.0.0'
 }
 
 // include user specific build tasks

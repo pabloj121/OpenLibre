@@ -134,5 +134,6 @@
     <string name="import_data">Importar datos</string>
     <string name="incorrect_extension">La única extensión de archivo permitida es CSV</string>
     <string name="import_finished">Importación finalizada</string>
+    <string name="sensor_expires_soon">El sensor se agotará pronto</string>
 
 </resources>

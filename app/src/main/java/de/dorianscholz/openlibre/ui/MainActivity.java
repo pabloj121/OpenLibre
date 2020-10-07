@@ -56,6 +56,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -75,6 +76,7 @@ import de.dorianscholz.openlibre.model.RawTagData;
 import de.dorianscholz.openlibre.model.ReadingData;
 import de.dorianscholz.openlibre.model.SensorData;
 import de.dorianscholz.openlibre.service.NfcVReaderTask;
+import de.dorianscholz.openlibre.service.SensorExpiresNotificationKt;
 import de.dorianscholz.openlibre.service.TidepoolSynchronization;
 import de.dorianscholz.openlibre.ui.login.LoginActivity;
 
@@ -88,6 +90,8 @@ import io.realm.Sort;
 import static de.dorianscholz.openlibre.OpenLibre.openLibreDataPath;
 import static de.dorianscholz.openlibre.OpenLibre.realmConfigProcessedData;
 import static de.dorianscholz.openlibre.OpenLibre.realmConfigRawData;
+import static de.dorianscholz.openlibre.model.AlgorithmUtil.getDurationBreakdown;
+import static de.dorianscholz.openlibre.model.SensorData.START_DATE;
 import static de.dorianscholz.openlibre.service.NfcVReaderTask.processRawData;
 
 
@@ -175,12 +179,6 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             Toast.makeText(this, getResources().getString(R.string.error_nfc_device_not_supported), Toast.LENGTH_LONG).show();
         }
 
-        // "context" must be an Activity, Service or Application object from your app.
-        // Its necessary to make some tests !
-        if (! Python.isStarted()) {
-            Python.start(new AndroidPlatform(this));
-        }
-
         importPathFile = (TextView) findViewById(R.id.importPathFile);
         filePicker = (Button) findViewById(R.id.import_button);
 
@@ -234,6 +232,27 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
                 }
             }
         }
+
+        // One of the checks before the user interaction is the remaining sensor time
+        Realm realmProcessedData = Realm.getInstance(realmConfigProcessedData);
+        RealmResults<SensorData> sensorDataResults = realmProcessedData.where(SensorData.class).
+                findAllSorted(START_DATE, Sort.DESCENDING);
+
+        SensorData sensorData = sensorDataResults.first();
+        long timeLeft = sensorData.getTimeLeft();
+        long three_days = TimeUnit.DAYS.toMillis(3);
+
+        // If the remaining time is less than 3 days, the user will see the notification
+        // showing the remaining sensor time each time the user enter to the application
+        if(timeLeft < three_days){
+            Intent intent = new Intent(this, SensorExpiresNotificationKt.class);
+            startActivity(intent);
+            // sensorEndsIn.setText(getDurationBreakdown(getResources(), sensorData.getTimeLeft()));
+        } else {
+            Toast.makeText(this, R.string.sensor_expired, Toast.LENGTH_SHORT).show();
+        }
+
+        realmProcessedData.close();
     }
 
     @Override
@@ -531,19 +550,23 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         String current = localDate.getDayOfMonth() + "/" + localDate.getMonth() + "/" + localDate.getYear();
 
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
-        Date firstDate = null;
+
+        Date firstDate = new Date();
         try {
             firstDate = sdf.parse(startDateString);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        Date secondDate = null;
+        Date secondDate = new Date();
+
+        System.out.println("date: " + secondDate);
         try {
             secondDate = sdf.parse(current);
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        System.out.println("date: " + secondDate);
 
         long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
         long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
@@ -553,20 +576,20 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
         // Each five days, the model trains with the new data and is rebuilt
         // if (diff > 7){
-            // El modelo se debe entrenar con los datos nuevos
-            initPython();
+        // El modelo se debe entrenar con los datos nuevos
+        initPython();
 
-            // Maybe I have problems with path leght... !
-            Python python = Python.getInstance();
-            PyObject pythonFile = python.getModule("../../../../../../../../TensorFlow/TemplateModel.py");
-            // pythonFile
+        // Maybe I have problems with path leght... !
+        Python python = Python.getInstance();
+        // PyObject pythonFile = python.getModule("../../../../../../../../TensorFlow/TemplateModel.py");
+        // pythonFile
 
 
-            Intent intent = new Intent(this, AlgorithmActivity.class);
+        Intent intent = new Intent(this, AlgorithmActivity.class);
 
-            // Tengo que pasarle a la activity las opciones de menú
-            startActivity(intent);
-            return true;
+        // Tengo que pasarle a la activity las opciones de menú
+        startActivity(intent);
+        return true;
         /*
         }else {
             Toast.makeText(this, "Aún no hay información suficiente", Toast.LENGTH_SHORT);

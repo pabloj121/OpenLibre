@@ -64,5 +64,6 @@
     <string name="import_data">Daten importieren</string>
     <string name="incorrect_extension">Die einzige zulässige Dateierweiterung ist CSV</string>
     <string name="import_finished">Import beendet</string>
+    <string name="sensor_expires_soon">Der Sensor wird bald auslaufen</string>
 
 </resources>

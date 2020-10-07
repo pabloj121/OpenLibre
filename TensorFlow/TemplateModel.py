@@ -22,7 +22,6 @@ y_train = x_train.pop('class')
 # Exploracion de los datos
 x_train.head()
 
-
 x_train.shape[0] #x_test.shape[0]
 
 # x_train['sport'].value_counts().plot(kind='barh')
@@ -31,10 +30,11 @@ x_train.shape[0] #x_test.shape[0]
 # ES IMPORTANTE EXPLORAR LOS DATOS ANTES DE CONSTRUIR EL MODELO
 
 
-
 # CREAR COLUMNAS DE CARACTERISTICAS Y FUNCIONES DE ENTRADA
 CATEGORICAL_COLUMNS = [ 'timezone', 'date', 'lunchtime', 'food_type', 'sport', 'trend', 'stress']
 NUMERIC_COLUMNS = ['id']
+	
+tf.random.set_seed(123456)
 
 def one_hot_cat_column(feature_name, vocab):
   return tf.feature_column.indicator_column(
@@ -74,6 +74,8 @@ train_input_fn = make_input_fn(x_train, y_train)
 
 # Inspeccionar el conjunto de datos
 ds = make_input_fn(x_train, y_train, batch_size=10)()
+
+# Exploración de los datos
 for feature_batch, label_batch in ds.take(1):
   print('Some feature keys:', list(feature_batch.keys()))
   print()
@@ -82,12 +84,13 @@ for feature_batch, label_batch in ds.take(1):
   print('A batch of Labels:', label_batch.numpy())
 
 
-# POR ULTIMO, ENTRENA Y EVALUA EL MODELO
-#model = tf.estimator.LinearClassifier(feature_columns)
 
-# Train model.
-#model.train(train_input_fn, max_steps=100)
-
+params = {
+	'n_trees': 50,
+	'max_depth': 3,
+	'n_batches_per_layer': 1,
+	'center_bias': True
+}
 
 
 # IMPLEMENTACION Boosted Trees+
@@ -98,6 +101,8 @@ n_batches = 1
 model = tf.estimator.BoostedTreesClassifier(feature_columns,
                                           n_batches_per_layer=n_batches)
 
+# model = tf.estimator.BoostedTreesClassifier(feature_columns, **params)
+
 # The model will stop training once the specified number of trees is built, not
 # based on the number of steps.
 model.train(train_input_fn, max_steps=100)
@@ -106,7 +111,6 @@ model.train(train_input_fn, max_steps=100)
 # result = model.evaluate(test_input_fn) # test_input_fn solo en caso que separemos train y test
 # clear_output()
 # print(pd.Series(result))
-
 
 
 
