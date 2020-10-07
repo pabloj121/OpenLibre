@@ -238,18 +238,20 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         RealmResults<SensorData> sensorDataResults = realmProcessedData.where(SensorData.class).
                 findAllSorted(START_DATE, Sort.DESCENDING);
 
-        SensorData sensorData = sensorDataResults.first();
-        long timeLeft = sensorData.getTimeLeft();
-        long three_days = TimeUnit.DAYS.toMillis(3);
+        if (sensorDataResults.size() > 0){
+            SensorData sensorData = sensorDataResults.first();
+            long timeLeft = sensorData.getTimeLeft();
+            long three_days = TimeUnit.DAYS.toMillis(3);
 
-        // If the remaining time is less than 3 days, the user will see the notification
-        // showing the remaining sensor time each time the user enter to the application
-        if(timeLeft < three_days){
-            Intent intent = new Intent(this, SensorExpiresNotificationKt.class);
-            startActivity(intent);
-            // sensorEndsIn.setText(getDurationBreakdown(getResources(), sensorData.getTimeLeft()));
-        } else {
-            Toast.makeText(this, R.string.sensor_expired, Toast.LENGTH_SHORT).show();
+            // If the remaining time is less than 3 days, the user will see the notification
+            // showing the remaining sensor time each time the user enter to the application
+            if(timeLeft < three_days){
+                Intent intent = new Intent(this, SensorExpiresNotificationKt.class);
+                startActivity(intent);
+                // sensorEndsIn.setText(getDurationBreakdown(getResources(), sensorData.getTimeLeft()));
+            } else {
+                Toast.makeText(this, R.string.sensor_expired, Toast.LENGTH_SHORT).show();
+            }
         }
 
         realmProcessedData.close();
