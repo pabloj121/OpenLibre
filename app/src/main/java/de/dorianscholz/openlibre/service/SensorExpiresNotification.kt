@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
 val NOTIFICATION_ID = 123
 val CHANNEL_ID = "mychannel"
 
-class SesnsorExpiresNotification : AppCompatActivity() {
+class SensorExpiresNotification : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -33,16 +33,11 @@ class SesnsorExpiresNotification : AppCompatActivity() {
         if (sensorDataResults.size == 0) {
             Toast.makeText(this, R.string.no_sensor_registered, Toast.LENGTH_SHORT).show()
         } else {
-
             val sensorData = sensorDataResults.first()
-            // sendNotification(sensorData)
-
             val timeLeft = sensorData.timeLeft
 
             if (timeLeft >= TimeUnit.MINUTES.toMillis(1L)) {
                 sendNotification(sensorData)
-            } else {
-                Toast.makeText(this, R.string.sensor_expired, Toast.LENGTH_SHORT).show()
             }
         }
 

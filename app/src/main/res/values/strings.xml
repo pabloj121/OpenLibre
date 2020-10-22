@@ -164,4 +164,17 @@
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
     <string name="sensor_expires_soon">The sensor will soon expire</string>
+
+    <string name="save">Save</string>
+    <string name="close">Close</string>
+    <string name="delete">Delete</string>
+    <string name="example_3_input_dialog_title">Enter event title</string>
+    <string name="example_3_empty_input_text">Text is empty</string>
+    <string name="example_3_dialog_delete_confirmation">Delete this event?</string>
+    <string name="example_3_title">Example 3</string>
+    <string name="example_3_subtitle">Event style implementation, day labels as header view, single selection, month scroll listener. Similar to what is in the Google Calendar app.</string>
+    <string name="import_failed">Import failed</string>
+    <string name="data_visualization">Data visualization</string>
+    <string name="complete_glucose_data">Complete Glucose Data</string>
+
 </resources>

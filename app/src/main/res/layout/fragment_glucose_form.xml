@@ -104,8 +104,19 @@
         android:text="Sport"
         android:layout_gravity="center"/>
     <!-- Dias especiales -->
-
-
+    <TextView
+        android:id="@+id/hora_inicio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hora inicial"
+        android:inputType="time"/>
+    <TextView
+        android:id="@+id/hora_final"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hora final"
+        android:digits="0123456789:"
+        android:inputType="time"/>
     <View
         android:id="@+id/divider4"
         android:layout_width="match_parent"

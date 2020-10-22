@@ -65,5 +65,8 @@
     <string name="incorrect_extension">Die einzige zulässige Dateierweiterung ist CSV</string>
     <string name="import_finished">Import beendet</string>
     <string name="sensor_expires_soon">Der Sensor wird bald auslaufen</string>
+    <string name="import_failed">Import mit Fehlern</string>
+    <string name="data_visualization">Daten-Visualisierung</string>
+    <string name="complete_glucose_data">Vollständige Glukose-Daten</string>
 
 </resources>

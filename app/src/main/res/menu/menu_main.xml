@@ -16,10 +16,15 @@
         android:title="Log in with Google"
         android:icon="@drawable/iconfinder_2_939729"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_report"
+        android:title="@string/data_visualization"
+        app:showAsAction="never" />
     <!-- Revisar nuevo item añadido -->
     <item
         android:id="@+id/action_complete_glucose_data"
-        android:title="Complete Glucose Data"
+        android:title="@string/complete_glucose_data"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_show_last_scan"

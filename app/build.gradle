@@ -28,6 +28,7 @@ android {
         python{
             pip{
                 install "pandas"
+                //from tensorflow import "keras"
                 install "tensorflow"
             }
         }
@@ -49,12 +50,17 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    // The include the directory in which Python code is going to be allocated
+    // The include the directory in which Python code is going to be allocated ! chaquopy location
+
     sourceSets{
         main{
-            python.srcDir "C:\\Users\\pablo\\Desktop\\Pablo\\TFG\\Proyecto\\OpenLibre\\TensorFlow"
+            //python.srcDir "C:\\Users\\pablo\\Desktop\\Pablo\\TFG\\Proyecto\\OpenLibre\\TensorFlow"
+            python{
+                srcDirs = ["src/main/python"]
+            }
         }
     }
+
 }
 
 dependencies {

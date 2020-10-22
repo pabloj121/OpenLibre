@@ -71,8 +71,13 @@ class AgendaFragment : Fragment() {
         super.onStart()
     }
 
-
     fun show(supportFragmentManager: FragmentManager, s: String) {
+    }
+
+    fun addEvent(){
+        // Using Google API's
+
+
 
     }
 }

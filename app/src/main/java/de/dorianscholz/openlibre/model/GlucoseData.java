@@ -32,7 +32,7 @@ public class GlucoseData extends RealmObject implements Comparable<GlucoseData> 
     // New fields
     private int horario_comer = 0;  // By default
     private int food_type = 0;      // By default
-    private boolean risk = false;
+    private int risk = 0;
     private boolean stress = false;
     private boolean sport = false; // horario_comer, food_type, risk, stresss, sport
     private boolean ascendent_trend = false;
@@ -107,6 +107,7 @@ public class GlucoseData extends RealmObject implements Comparable<GlucoseData> 
     public void setGlucoseLevelRaw(String glucose){
         // FIXME : It's necessary to check the next operation !
         glucoseLevelRaw = (int) convertNormalGlucoseToRawGlucose(glucose);
+
     }
 
     public static String formatValue(float value) {
@@ -183,9 +184,9 @@ public class GlucoseData extends RealmObject implements Comparable<GlucoseData> 
 
     public void setFood_type(int ft){ food_type = ft; }
 
-    public boolean isRisk() { return risk; }
+    public int getRisk() { return risk; }
 
-    public void setRisk(String s){ risk = Boolean.parseBoolean(s); }
+    public void setRisk(int r){ risk = r; }
 
     public boolean isStress() { return stress; }
 

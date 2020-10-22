@@ -135,5 +135,8 @@
     <string name="incorrect_extension">La única extensión de archivo permitida es CSV</string>
     <string name="import_finished">Importación finalizada</string>
     <string name="sensor_expires_soon">El sensor se agotará pronto</string>
+    <string name="import_failed">Importación errónea</string>
+    <string name="data_visualization">Visualización de datos</string>
+    <string name="complete_glucose_data">Completar datos</string>
 
 </resources>

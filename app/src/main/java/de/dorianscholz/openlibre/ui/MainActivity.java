@@ -13,6 +13,7 @@ import android.nfc.NfcManager;
 import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 
 import com.chaquo.python.PyObject;
@@ -26,6 +27,8 @@ import androidx.annotation.RequiresPermission;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -115,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
     private MainActivity mainActivity;
 
     private FirebaseAuth auth;
-    private boolean logged = false;
+    private boolean logged = false; // not used !
 
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -125,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
     TextView importPathFile;
     Button filePicker;
     Intent importFileIntent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,8 +154,6 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         if (auth.getCurrentUser() != null) {
             // already signed in
             logged = true;
-        } else {
-            // not signed in
         }
 
         // Go to the previous screen after press on the back arrow !
@@ -248,7 +250,6 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             if(timeLeft < three_days){
                 Intent intent = new Intent(this, SensorExpiresNotificationKt.class);
                 startActivity(intent);
-                // sensorEndsIn.setText(getDurationBreakdown(getResources(), sensorData.getTimeLeft()));
             } else {
                 Toast.makeText(this, R.string.sensor_expired, Toast.LENGTH_SHORT).show();
             }
@@ -525,13 +526,20 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
                 finish();
             }
 
-        } else if (id== R.id.action_prediction){
-            List<GlucoseData> history = mRealmProcessedData.where(GlucoseData.class).
+        } else if (id== R.id.action_prediction) {
+            /*List<GlucoseData> history = mRealmProcessedData.where(GlucoseData.class).
                     equalTo(GlucoseData.IS_TREND_DATA, false).
-                    findAllSorted(GlucoseData.DATE, Sort.ASCENDING);
+                    findAllSorted(GlucoseData.DATE, Sort.ASCENDING);*/
+
+            List<ReadingData> history = mRealmProcessedData.where(ReadingData.class).
+                    findAllSorted(ReadingData.DATE, Sort.ASCENDING);
 
             trainModel(history);
-
+            /* if (first_time){
+                    createModel(history);
+                }else
+                    trainModel(history);
+             */
             // Show results
 
             return true;
@@ -541,12 +549,37 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             form.show(getSupportFragmentManager(), "glucoseformfragment");
 
             return true;
+        } else if ( id == R.id.action_report) {
+            // Toast.makeText(this, Integer.toString(R.id.fragment_report), Toast.LENGTH_SHORT).show();
+            // 0x7f0900f5
+
+            // final View fragmentView = findViewById(R.id.fragment_report);
+            // fragmentView.setVisibility(View.VISIBLE);
+
+            //getSupportFragmentManager().beginTransaction()
+            //        .add(R.id.fragment_report, ReportFragment.newInstance(),"reportFragment")
+            //        .commit();
+
+            /*
+            ReportFragment report = new ReportFragment();
+            FragmentManager manager = getSupportFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+            transaction.add(R.id.fragment_report, report);
+            transaction.commit();
+            */
+
+
+            Intent intent = new Intent(this, DataVisualizationActivity.class);
+            startActivity(intent);
+
+
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    public boolean trainModel(List<GlucoseData> history){
+    public boolean trainModel(List<ReadingData> history){
         // The model will be trained every seven days, halfway through the use of the sensor
         LocalDate localDate = LocalDate.now();
         String current = localDate.getDayOfMonth() + "/" + localDate.getMonth() + "/" + localDate.getYear();
@@ -574,30 +607,33 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
 
         // Repasar si aqui va el mViewPager !
-        export(mViewPager);
+        // export(mViewPager);
 
         // Each five days, the model trains with the new data and is rebuilt
-        // if (diff > 7){
+        //if (diff > 7){
         // El modelo se debe entrenar con los datos nuevos
+        String data = dataToCSV(history);
+
         initPython();
 
-        // Maybe I have problems with path leght... !
         Python python = Python.getInstance();
-        // PyObject pythonFile = python.getModule("../../../../../../../../TensorFlow/TemplateModel.py");
+        PyObject pythonFile = python.getModule("TemplateModel");
         // pythonFile
 
-
+        /*
         Intent intent = new Intent(this, AlgorithmActivity.class);
-
         // Tengo que pasarle a la activity las opciones de menú
         startActivity(intent);
         return true;
+        */
+        
         /*
         }else {
             Toast.makeText(this, "Aún no hay información suficiente", Toast.LENGTH_SHORT);
             return false;
         }
          */
+        return true; // Esta linea esta a voleo, revisar !
     }
 
 
@@ -608,31 +644,106 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         }
     }
 
+    public String dataToCSV(List<ReadingData> history){
+        StringBuilder data = new StringBuilder();
+
+        // Cabecera de la función !
+        // class is equal to risk
+        data.append("id,timezone,date,glucose,horario_comer,food_type,sport,trend,is_trend,stress,class\n");
+        // comprobar fecha  5 días!
+        for (ReadingData read: history) {
+            RealmList<GlucoseData> trend = read.getTrend();
+
+            for (GlucoseData glucose: trend) {
+                data.append(glucose.getId() + "," + glucose.getTimezoneOffsetInMinutes() + "," + glucose.getDate() + ","
+                        + glucose.glucose() + "," + glucose.getHorario_comer() + "," + glucose.getFood_type() + "," +
+                        glucose.isSport() + "," + "" + "," + glucose.isTrendData() + "," + glucose.isStress() +
+                        "," + glucose.getRisk()+ "\n");
+            }
+        }
+        return data.toString();
+    }
+
+    // Define the risk controls
+    public void dataTreatment(List<ReadingData> history){
+        for (ReadingData reading: history){
+
+        }
+
+        for(int i = 0;i < history.size(); ++i){
+            List<GlucoseData> glucoseList = history.get(i).getHistory();
+
+            for (int j = 0; j < glucoseList.size()-1; ++j){
+                float glucose = glucoseList.get(j+1).glucose();
+                // String nuevo = Float.toString(glucose);
+                glucoseList.get(j).setGlucoseLevelRaw(Float.toString(glucose));
+            }
+            // history.get(i).setHistory(glucose);
+
+        }
+
+    }
+
+
+
 
     public void export(View view){
-        // Tratar los datos antes de escribirlos
+        // Check permissions
+        Intent intent = new Intent(this, SensorExpiresNotificationKt.class);
+        startActivity(intent);
+
+
+        // Tratar los datos antes de escribirlos !
         List<ReadingData> history2 = mRealmProcessedData.where(ReadingData.class).
                 findAllSorted(ReadingData.DATE, Sort.ASCENDING);
 
         StringBuilder data = new StringBuilder();
 
         // Cabecera de la función !
-        data.append("id,timezone,date,glucose,horario_comer,food_type,sport,trend,is_trend,stress,risk\n");
+        // class is equal to risk
+        data.append("id,timezone,date,glucose,horario_comer,food_type,sport,trend,is_trend,stress,class\n");
         // comprobar fecha  5 días!
         for (ReadingData read: history2) {
             RealmList<GlucoseData> trend = read.getTrend();
 
+            // Exporting only trend and not history?!
             for (GlucoseData glucose: trend) {
                 data.append(glucose.getId() + "," + glucose.getTimezoneOffsetInMinutes() + "," + glucose.getDate() + ","
                         + glucose.glucose() + "," + glucose.getHorario_comer() + "," + glucose.getFood_type() + "," +
-                        glucose.isSport() + "," + "," + "" + "," + glucose.isTrendData() + glucose.isStress() +
-                        "," + glucose.isRisk()+ "\n");
+                        glucose.isSport() + "," + "" + "," + glucose.isTrendData() + "," + glucose.isStress() +
+                        "," + glucose.getRisk()+ "\n");
             }
         }
 
+        // Start writing locally (INTERNAL STORAGE??!)
+        String filename = "data.csv";
+        FileOutputStream out = null;
+
+        try{
+            out = openFileOutput(filename, MODE_PRIVATE);
+            out.write(data.toString().getBytes());
+
+            // Toast.makeText(this, "Saved to" + getExternalFilesDir() + "/" + filename, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Saved to" + getFilesDir() + "/" + filename, Toast.LENGTH_SHORT).show();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e){
+            e.printStackTrace();
+        } finally {
+            if (out != null){
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        // Finish writing locally
+
         try{
             // Saving the file into device
-            FileOutputStream out = openFileOutput("data.csv", Context.MODE_PRIVATE);
+            //FileOutputStream
+            out = openFileOutput("data.csv", Context.MODE_PRIVATE);
             out.write((data.toString()).getBytes());
             out.close();
 
@@ -645,6 +756,8 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Data");
             fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             fileIntent.putExtra(Intent.EXTRA_STREAM, path);
+            // the next line is not ready yet
+            fileIntent.putExtra(Intent.ACTION_CREATE_DOCUMENT, path);
             startActivity(Intent.createChooser(fileIntent, "Send mail"));
 
             // Toast.makeText(this, "Path of the file saved: " + openLibreDataPath.getAbsolutePath(), Toast.LENGTH_SHORT).show();
@@ -698,7 +811,6 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         RealmList<GlucoseData> history = new RealmList<GlucoseData>(); // = previousData.getHistory();
         RealmList<GlucoseData> trend = new RealmList<GlucoseData>(); // null;
 
-
         // Header reading
         try{
             nextLine = reader.readNext();
@@ -727,7 +839,7 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             glucose.setAscendent_trend(nextLine[7]);
             glucose.setTrendData(nextLine[8]);
             glucose.setStress(Boolean.parseBoolean(nextLine[9]));
-            glucose.setRisk(nextLine[10]);
+            glucose.setRisk(Integer.parseInt(nextLine[10])); // revisar!
 
             // Its necessary to save the trend
             if (glucose.isTrendData()){
@@ -841,6 +953,7 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
                             String path = data.getData().getPath();
+                            Toast.makeText(this, path, Toast.LENGTH_SHORT).show();
                             importPathFile.setText(path);
                             try {
                                 importCSV(path);
@@ -863,8 +976,11 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
                     }
                 }
                 else{
-                    Toast.makeText(this, "import fallido", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.import_failed, Toast.LENGTH_SHORT).show();
                 }
+                break;
+            case 112:   // export
+
                 break;
         }
     }
@@ -894,4 +1010,14 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
     public boolean isLogged() {
         return logged;
     }
+
+    // The next methods are used for writing to external storage
+    private boolean writeExternalStorage(){
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
+            return true;
+        } else
+            return false;
+    }
+
+
 }
