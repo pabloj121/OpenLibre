@@ -5,7 +5,7 @@
     android:id="@+id/fragment_report"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.ReportFragment"
+    tools:context=".ui.DataVisualizationActivity"
     android:backgroundTint="@color/white"
     android:parentActivityName=".MainActivity">
 
@@ -23,12 +23,8 @@
             android:id="@+id/home"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fillColor="#FFFFFF"
             android:visibility="invisible"
-            app:backgroundTint="@color/colorPrimaryLight"
-            app:icon="@drawable/baseline_arrow_back_white_18dp"
-            app:iconTint="#FFFFFF"
-            app:tint="@null" />
+            app:icon="@drawable/baseline_arrow_back_white_18dp" />
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -55,7 +51,7 @@
             android:text="Last Day"
             android:textSize="@dimen/text_margin"
             android:textColor="@color/white"
-            android:layout_margin="16dp"
+            android:layout_margin="10dp"
             android:visibility="visible"
             android:background="@color/colorPrimary"/>
 
@@ -63,17 +59,36 @@
             android:id="@+id/lastweek"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
+            android:background="@color/colorPrimary"
             android:text="Last Week"
             android:textColor="@color/white"
-            android:layout_margin="16dp"
-            android:visibility="visible"
-            android:background="@color/colorPrimary"/>
+            android:textSize="16dp"
+            android:visibility="visible" />
+
+        <Button
+            android:id="@+id/targetperiod"
+            android:layout_width="110dp"
+            android:layout_height="53dp"
+            android:layout_gravity="end"
+            android:layout_margin="10dp"
+            android:background="@color/colorPrimary"
+            android:text="Target Period"
+            android:textColor="@color/white"
+            android:textSize="14dp"
+            android:visibility="visible" />
     </LinearLayout>
 
 
     <com.jjoe64.graphview.GraphView
         android:id="@+id/graph"
+        android:layout_width="match_parent"
+        android:layout_height="550dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp"/>
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/piechart"
         android:layout_width="match_parent"
         android:layout_height="550dp"
         android:layout_centerHorizontal="true"
