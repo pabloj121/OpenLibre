@@ -3,31 +3,73 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:agendaCalendar="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.AgendaFragment">
 
+    <!--
     <CalendarView
         android:id="@+id/calendar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
-    
+    -->
+
+    <!--
+    <com.github.tibolte.agendacalendarview.AgendaCalendarView
+        android:id="@+id/agenda_calendar_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        agendaCalendar:agendaCurrentDayTextColor="@color/theme_primary"
+        agendaCalendar:calendarColor="@color/theme_primary"
+        agendaCalendar:calendarCurrentDayTextColor="@color/calendar_text_current_day"
+        agendaCalendar:calendarDayTextColor="@color/theme_text_icons"
+        agendaCalendar:calendarHeaderColor="@color/theme_primary_dark"
+        agendaCalendar:calendarPastDayTextColor="@color/theme_light_primary"
+        agendaCalendar:fabColor="@color/theme_accent" />
+    -->
+
+
+    <!--
+    agendaCalendar:calendarCurrentDayTextColor="@color/main_blue"
+    agendaCalendar:calendarHeaderColor="@color/main_blue"
+    agendaCalendar:circleBackgroundColor="@drawable/selected_day_background"
+    -->
+
+    <com.ognev.kotlin.agendacalendarview.AgendaCalendarView
+        android:id="@+id/agenda_calendar_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        agendaCalendar:calendarCurrentDayTextColor="@color/colorPrimary"
+        agendaCalendar:calendarSelectedDayTextColor="@color/white"
+        agendaCalendar:calendarMonthTextColor="@color/black"
+        agendaCalendar:calendarHeaderColor="@color/colorPrimaryDark"
+        agendaCalendar:circleBackgroundColor="@drawable/selected_day_background"
+        agendaCalendar:calendarPastDayTextColor="@android:color/darker_gray"
+        agendaCalendar:cellPastBackgroundColor="@color/calendar_past_days_bg"
+        agendaCalendar:cellNowadaysDayColor="@color/white"
+        tools:layout_editor_absoluteY="8dp"
+        tools:layout_editor_absoluteX="8dp" />
+
+
+    <!--android:onClick="addEvent"-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addEvent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="addEvent"
         android:layout_margin="10dp"
-        android:visibility="visible"
-        android:layout_gravity="bottom|right"
+        android:visibility="gone"
+        android:layout_gravity="end"
         android:contentDescription="Este boton sirve para añadir un evento al calendario"
         android:text="@string/export_data"
         />
     <!-- Completar agenda (tutoriales Google) -->
+    <!--
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/lista_eventos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"/>
-
+    -->
     <!--
     <TextView
         android:layout_width="match_parent"

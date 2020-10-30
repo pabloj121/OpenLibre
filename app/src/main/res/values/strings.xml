@@ -176,5 +176,9 @@
     <string name="import_failed">Import failed</string>
     <string name="data_visualization">Data visualization</string>
     <string name="complete_glucose_data">Complete Glucose Data</string>
+    <string name="no_events">No events for this day</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="configure">Configure</string>
+    <string name="add_widget">Add widget</string>
 
 </resources>

@@ -84,19 +84,11 @@
             android:label="@string/action_settings"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme">
-        </activity>
-        <activity android:name=".ui.DataVisualizationActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ui.DataVisualizationActivity"
             android:parentActivityName=".ui.MainActivity"
-            android:theme="@style/AppTheme">
-        </activity>
+            android:theme="@style/AppTheme" />
     </application>
-    <!--
 
-    android:parentActivityName=".ui.MainActivity"
-    <meta-data
-    android:name="android.support.PARENT_ACTIVITY"
-    android:value=".ui.MainActivity"
-    />
-    -->
 </manifest>

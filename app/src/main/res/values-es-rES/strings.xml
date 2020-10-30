@@ -138,5 +138,6 @@
     <string name="import_failed">Importación errónea</string>
     <string name="data_visualization">Visualización de datos</string>
     <string name="complete_glucose_data">Completar datos</string>
+    <string name="no_events">No events for this day</string>
 
 </resources>

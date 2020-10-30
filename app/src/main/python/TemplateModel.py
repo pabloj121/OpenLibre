@@ -5,23 +5,98 @@ Spyder Editor
 This is a temporary script file.
 """
 
-import tensorflow as tf
+
+"""
+Este archivo se ejecutará solamente cuando el usuario realice
+un escaneo. Si no hay datos suficientes, se informa.
+
+la variable ultima del Y es la que debe comprobarse para darle 
+información al usuario, así como el soporte del arbol de decision
+que razone si hay peligro.
+"""
+
+
+
+
+
+#import tensorflow as tf
+#from tensorflow import keras
+#from tensorflow.contrib import lite
 import pandas as pd
-from tensorflow import keras
-from tensorflow.contrib import lite
+import lightgbm as lgb
+from sklearn.metrics import f1_score
+from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+import numpy as np
+
+skf = StratifiedKFold(n_splits = 5, shuffle=True, random_state=123456)
+
+def validacion_cruzada(modelo, X, y, cv):
+  y_test_all = []
+
+  for train, test in cv.split(X, y):
+    #t = time.time()
+    modelo = modelo.fit(X[train],y[train])
+    #tiempo = time.time() - t
+    y_pred = modelo.predict(X[test])
+    #print("F1 score (val): {:.4f}".format(f1_score(y[test],y_pred,average='micro')))
+    y_test_all = np.concatenate([y_test_all,y[test]])
+
+  #print("")
+
+  return modelo, y_test_all, f1_score(y[test],y_pred,average='micro')
+
+# Its necessary to read and organize the data as a CSV file
+def main(data, info):
+  df = pd.read_csv(data, sep=',', engine='c') #engine='c'
+  #print(df)
+
+  # split the data into train and test set
+  #train, test = train_test_split(df, test_size=0.2, random_state=123456, shuffle=True)
+
+  #lgbm = lgb.LGBMClassifier(objective='regression_l1', n_estimators=500,n_jobs=-1)
+  #lgbm, y_test_lgbm, score = validacion_cruzada(lgbm,X,y,skf)
+  #lgbm, y_test_lgbm = validacion_cruzada(lgbm,X,y,skf)
+
+  rf = RandomForestClassifier(n_estimators = 200, n_jobs=-1)
+  #rf = RandomForestClassifier()
+
+  #from sklearn.experimental import enable_hist_gradient_boosting  # noqa
+  #from sklearn.ensemble import HistGradientBoostingClassifier
+  #hg = HistGradientBoostingClassifier()
 
 
-x_train = pd.read_csv('archivo.csv', sep=",", index_col=0)
-y_train = x_train.pop('class')
+
+  rf, y_test_rf, score = validacion_cruzada(rf, X, y, skf)
+  string_score = str(score)
+
+  result = string_score + "," + risk + "," + "support"
+  #result = "puntuacion,riesgo,explicaciones"
+  return result
+
+  pass
+
+
+
+
+
+
+
+
+
+
+
+#x_train = pd.read_csv('archivo.csv', sep=",", index_col=0)
+#y_train = x_train.pop('class')
 
 
 # Borrar columnas que no sean útiles !
 
 
 # Exploracion de los datos
-x_train.head()
-
-x_train.shape[0] #x_test.shape[0]
+#x_train.head()
+#x_train.shape[0] #x_test.shape[0]
 
 # x_train['sport'].value_counts().plot(kind='barh')
 # plt.show

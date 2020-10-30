@@ -98,6 +98,7 @@ import static de.dorianscholz.openlibre.model.SensorData.START_DATE;
 import static de.dorianscholz.openlibre.service.NfcVReaderTask.processRawData;
 
 
+
 public class MainActivity extends AppCompatActivity implements LogFragment.OnScanDataListener {
 
     private static final String LOG_ID = "OpenLibre::" + MainActivity.class.getSimpleName();
@@ -128,7 +129,6 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
     TextView importPathFile;
     Button filePicker;
     Intent importFileIntent;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -526,56 +526,32 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
                 finish();
             }
 
-        } else if (id== R.id.action_prediction) {
-            /*List<GlucoseData> history = mRealmProcessedData.where(GlucoseData.class).
-                    equalTo(GlucoseData.IS_TREND_DATA, false).
-                    findAllSorted(GlucoseData.DATE, Sort.ASCENDING);*/
-
-            List<ReadingData> history = mRealmProcessedData.where(ReadingData.class).
-                    findAllSorted(ReadingData.DATE, Sort.ASCENDING);
-
-            trainModel(history);
-            /* if (first_time){
-                    createModel(history);
-                }else
-                    trainModel(history);
-             */
-            // Show results
-
-            return true;
-
         } else if ( id == R.id.action_complete_glucose_data) {
             GlucoseFormFragment form =  GlucoseFormFragment.newInstance();
             form.show(getSupportFragmentManager(), "glucoseformfragment");
 
             return true;
         } else if ( id == R.id.action_report) {
-            // Toast.makeText(this, Integer.toString(R.id.fragment_report), Toast.LENGTH_SHORT).show();
-            // 0x7f0900f5
-
-            // final View fragmentView = findViewById(R.id.fragment_report);
-            // fragmentView.setVisibility(View.VISIBLE);
-
-            //getSupportFragmentManager().beginTransaction()
-            //        .add(R.id.fragment_report, ReportFragment.newInstance(),"reportFragment")
-            //        .commit();
-
-            /*
-            ReportFragment report = new ReportFragment();
-            FragmentManager manager = getSupportFragmentManager();
-            FragmentTransaction transaction = manager.beginTransaction();
-            transaction.add(R.id.fragment_report, report);
-            transaction.commit();
-            */
-
-
             Intent intent = new Intent(this, DataVisualizationActivity.class);
             startActivity(intent);
 
+            return true;
+        }
+        /*
+        * else if (id== R.id.action_prediction) {
+            //List<GlucoseData> history = mRealmProcessedData.where(GlucoseData.class).
+                    //equalTo(GlucoseData.IS_TREND_DATA, false).
+                    //findAllSorted(GlucoseData.DATE, Sort.ASCENDING);
+
+            List<ReadingData> history = mRealmProcessedData.where(ReadingData.class).
+                    findAllSorted(ReadingData.DATE, Sort.ASCENDING);
+
+            trainModel(history);
 
             return true;
         }
-
+        */
+        
         return super.onOptionsItemSelected(item);
     }
 
@@ -617,9 +593,9 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         initPython();
 
         Python python = Python.getInstance();
-        PyObject pythonFile = python.getModule("TemplateModel");
-        // pythonFile
-
+        PyObject pythonFile = python.getModule("prediction"); // prediction.py
+        PyObject results = pythonFile.callAttr("main", data);
+        String r = results.toString();
         /*
         Intent intent = new Intent(this, AlgorithmActivity.class);
         // Tengo que pasarle a la activity las opciones de menú
