@@ -21,7 +21,11 @@
         android:id="@+id/action_report"
         android:title="@string/data_visualization"
         app:showAsAction="never" />
-    <!-- Revisar nuevo item añadido -->
+
+    <item
+        android:id="@+id/action_predicion"
+        android:title="Model Prediction"
+        app:showAsAction="never" />
     <item
         android:id="@+id/action_complete_glucose_data"
         android:title="@string/complete_glucose_data"

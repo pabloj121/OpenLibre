@@ -543,21 +543,11 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             startActivity(intent);
 
             return true;
-        }
-        /*
-        * else if (id== R.id.action_prediction) {
-            //List<GlucoseData> history = mRealmProcessedData.where(GlucoseData.class).
-                    //equalTo(GlucoseData.IS_TREND_DATA, false).
-                    //findAllSorted(GlucoseData.DATE, Sort.ASCENDING);
-
-            List<ReadingData> history = mRealmProcessedData.where(ReadingData.class).
-                    findAllSorted(ReadingData.DATE, Sort.ASCENDING);
-
-            trainModel(history);
-
+        } else if (id== R.id.action_predicion) {
+            trainModel();
             return true;
         }
-        */
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -668,15 +658,14 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
     }
 
 
-    public boolean trainModel(){
+    public void trainModel(){
         // The model will be trained every seven days, halfway through the use of the sensor
         /*
         LocalDate localDate = LocalDate.now();
         String current = localDate.getDayOfMonth() + "/" + localDate.getMonth() + "/" + localDate.getYear();
-
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
-
         Date firstDate = new Date();
+
         try {
             firstDate = sdf.parse(startDateString);
         } catch (ParseException e) {
@@ -686,25 +675,21 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         Date secondDate = new Date();
 
         System.out.println("date: " + secondDate);
+
         try {
             secondDate = sdf.parse(current);
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
         System.out.println("date: " + secondDate);
 
         long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
         long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-        */
 
         // Each five days, the model trains with the new data and is rebuilt
-        //if (diff > 7){
-        /*List<GlucoseData> history = mRealmProcessedData.where(GlucoseData.class).
-            equalTo(GlucoseData.IS_TREND_DATA, false).
-                findAllSorted(GlucoseData.DATE, Sort.ASCENDING);
-        */
+        //if (diff > 7){} else{}
 
-        /*
         long last_day_period = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1);
         List<ReadingData> history = mRealmProcessedData.where(ReadingData.class)
                 .greaterThan("timezoneOffsetInMinutes", last_day_period)
@@ -715,7 +700,8 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
         List<ReadingData>  history = mRealmProcessedData.where(ReadingData.class)
                 .findAllSorted(ReadingData.DATE, Sort.ASCENDING);
-        // El modelo se debe entrenar con los datos nuevos
+
+        // Model should be trained with new data
         String data = dataToCSV(history);
 
         initPython();
@@ -727,8 +713,6 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
         // Inform the user about statistics, predicting their current situation...
         Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
-
-        return true; // Esta linea esta a voleo, revisar !
     }
 
 
