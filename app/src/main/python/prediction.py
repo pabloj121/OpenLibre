@@ -73,7 +73,6 @@ def main(data_history, current_data):
   # split the data into train and test set
   #train, test = train_test_split(df, test_size=0.2, random_state=123456, shuffle=True)
 
-
   # Cross validator
   skf = StratifiedKFold(n_splits = 5, shuffle=True, random_state=123456)
   #Classifier

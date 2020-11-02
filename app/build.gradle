@@ -109,7 +109,7 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.10'
     implementation 'com.github.kizitonwose:CalendarView:0.4.4'
     implementation 'com.github.tibolte:agendacalendarview:1.0.4'
-    compile 'com.ognev.kotlin.agendacalendarview:kotlin-agendacalendarview:1.0'
+    implementation 'com.ognev.kotlin.agendacalendarview:kotlin-agendacalendarview:1.0'
 
     implementation 'com.opencsv:opencsv:4.6'
     implementation 'androidx.preference:preference-ktx:1.1.0'

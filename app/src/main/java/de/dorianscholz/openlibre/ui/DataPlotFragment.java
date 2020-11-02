@@ -322,7 +322,8 @@ public class DataPlotFragment extends Fragment
 
         // I have to test if the trend is saved!
         if (rotationDegrees < 0){ // The other case is the default case
-            currentGlucose.setAscendent_trend("true");
+            //currentGlucose.setAscendent_trend("true");
+            currentGlucose.setTrend(2);
         }
 
         iv_predictionArrow.setRotation(rotationDegrees);

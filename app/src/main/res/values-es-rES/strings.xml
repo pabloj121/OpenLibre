@@ -139,5 +139,6 @@
     <string name="data_visualization">Visualización de datos</string>
     <string name="complete_glucose_data">Completar datos</string>
     <string name="no_events">No events for this day</string>
-
+    <string name="add_event">Añadir un evento al calendario</string>
+    <string name="selected_day">Día seleccionado: </string>
 </resources>

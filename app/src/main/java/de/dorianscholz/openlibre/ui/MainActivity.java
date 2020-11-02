@@ -36,10 +36,13 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -90,6 +93,8 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
+import static de.dorianscholz.openlibre.OpenLibre.GLUCOSE_TARGET_MAX;
+import static de.dorianscholz.openlibre.OpenLibre.GLUCOSE_TARGET_MIN;
 import static de.dorianscholz.openlibre.OpenLibre.openLibreDataPath;
 import static de.dorianscholz.openlibre.OpenLibre.realmConfigProcessedData;
 import static de.dorianscholz.openlibre.OpenLibre.realmConfigRawData;
@@ -125,6 +130,8 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
     private LocalDate startDate;
     private String startDateString;
+    private long latest_data_processed;
+    private boolean first_time = true;
 
     TextView importPathFile;
     Button filePicker;
@@ -138,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         // initial_date = (Date) Calendar.getInstance().getTime();
         startDate = LocalDate.now();
         startDateString = startDate.getDayOfMonth() + "/" + startDate.getMonth() + "/" + startDate.getYear();
+        latest_data_processed = 0;
 
         mRealmRawData = Realm.getInstance(realmConfigRawData);
         mRealmProcessedData = Realm.getInstance(realmConfigProcessedData);
@@ -200,7 +208,6 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         super.onStart();
 
         FirebaseUser user = auth.getCurrentUser();
-
     }
 
     @Override
@@ -551,12 +558,119 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             return true;
         }
         */
-        
+
         return super.onOptionsItemSelected(item);
     }
 
-    public boolean trainModel(List<ReadingData> history){
+    public void setFirstTime(boolean time){
+        first_time = time;
+    }
+
+
+    // Define the risk controls
+    public void dataTreatment(boolean first_time){
+        RealmResults<GlucoseData> history;
+        ReadingData data_processed = new ReadingData();
+
+        Realm realmProcessedData = Realm.getInstance(realmConfigProcessedData);
+        realmProcessedData.beginTransaction();
+
+        // A los 3 ultimos no les pongo riesgo ! Hay que tener en cuenta la diferencia de tiempo
+        if (first_time){
+            history = mRealmProcessedData.where(GlucoseData.class)
+                    .findAllSorted(GlucoseData.DATE, Sort.ASCENDING);
+            setFirstTime(false);
+        } else {
+            long time_difference = TimeUnit.MINUTES.toMillis(11);
+
+            history = mRealmProcessedData.where(GlucoseData.class)
+                    .greaterThan("timezoneOffsetInMinutes", latest_data_processed - time_difference)
+                    .findAllSorted(GlucoseData.DATE, Sort.ASCENDING);
+
+            int iterator = 0;
+            ArrayList<Float> next_glucose = new ArrayList<Float>();
+
+            // To define the trend of the latest data processed
+            while(history.get(iterator).getTimezoneOffsetInMinutes() != latest_data_processed){
+                // previous_glucose.add(glucose.glucose());
+                iterator++;
+            }
+
+            boolean proceed = true;
+
+            for (iterator = 0; iterator < history.size()-3 && proceed; ++iterator){
+                next_glucose.add(history.get(iterator+3).glucose());
+                next_glucose.add(history.get(iterator+2).glucose());
+                next_glucose.add(history.get(iterator+1).glucose());
+
+                if (next_glucose.get(0) > GLUCOSE_TARGET_MAX || next_glucose.get(0) < GLUCOSE_TARGET_MIN){
+                    history.get(iterator+3).setRisk(0);
+                }else{
+
+                }
+
+            }
+
+            for (iterator = 0; iterator < history.size()-3; ++iterator){
+                int aux_iterator = iterator+3;
+                time_difference = history.get(iterator).getTimezoneOffsetInMinutes() + TimeUnit.MINUTES.toMillis(20);
+
+                if (history.get(aux_iterator).getTimezoneOffsetInMinutes() > time_difference) {
+                    --aux_iterator;
+                }
+
+
+                while(aux_iterator > iterator){
+                    if (history.get(aux_iterator).getTimezoneOffsetInMinutes() < time_difference) {
+                        if (history.get(aux_iterator).glucose() > GLUCOSE_TARGET_MAX) {
+
+                        } else { // < GLUCOSE_TARGET_MIN
+
+                        }
+                    }
+                    --aux_iterator;
+                }
+
+                if (history.get(iterator+3).getTimezoneOffsetInMinutes() < time_difference){
+                    if (history.get(iterator+3).glucose() > GLUCOSE_TARGET_MAX){
+
+                    } else { // < GLUCOSE_TARGET_MIN
+
+                    }
+                } else{ // Takes into account the next two values
+
+                }
+
+            }
+
+
+
+
+        }
+
+        /*
+        for(int i = 0;i < history.size(); ++i){
+            List<GlucoseData> glucoseList = history.get(i).getHistory();
+
+            for (int j = 0; j < glucoseList.size()-1; ++j){
+                float glucose = glucoseList.get(j+1).glucose();
+                // String nuevo = Float.toString(glucose);
+                glucoseList.get(j).setGlucoseLevelRaw(Float.toString(glucose));
+            }
+            // history.get(i).setHistory(glucose);
+
+        }
+        */
+        // !
+        ReadingData readingData = realmProcessedData.copyToRealmOrUpdate(data_processed);
+        realmProcessedData.commitTransaction();
+        realmProcessedData.close();
+    }
+
+
+    public boolean trainModel(){
         // The model will be trained every seven days, halfway through the use of the sensor
+        /*
         LocalDate localDate = LocalDate.now();
         String current = localDate.getDayOfMonth() + "/" + localDate.getMonth() + "/" + localDate.getYear();
 
@@ -581,12 +695,26 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
         long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
         long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-
-        // Repasar si aqui va el mViewPager !
-        // export(mViewPager);
+        */
 
         // Each five days, the model trains with the new data and is rebuilt
         //if (diff > 7){
+        /*List<GlucoseData> history = mRealmProcessedData.where(GlucoseData.class).
+            equalTo(GlucoseData.IS_TREND_DATA, false).
+                findAllSorted(GlucoseData.DATE, Sort.ASCENDING);
+        */
+
+        /*
+        long last_day_period = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1);
+        List<ReadingData> history = mRealmProcessedData.where(ReadingData.class)
+                .greaterThan("timezoneOffsetInMinutes", last_day_period)
+                .findAllSorted(ReadingData.DATE, Sort.ASCENDING);
+        */
+
+        dataTreatment(first_time);
+
+        List<ReadingData>  history = mRealmProcessedData.where(ReadingData.class)
+                .findAllSorted(ReadingData.DATE, Sort.ASCENDING);
         // El modelo se debe entrenar con los datos nuevos
         String data = dataToCSV(history);
 
@@ -594,21 +722,12 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
         Python python = Python.getInstance();
         PyObject pythonFile = python.getModule("prediction"); // prediction.py
-        PyObject results = pythonFile.callAttr("main", data);
-        String r = results.toString();
-        /*
-        Intent intent = new Intent(this, AlgorithmActivity.class);
-        // Tengo que pasarle a la activity las opciones de menú
-        startActivity(intent);
-        return true;
-        */
-        
-        /*
-        }else {
-            Toast.makeText(this, "Aún no hay información suficiente", Toast.LENGTH_SHORT);
-            return false;
-        }
-         */
+        PyObject prediction = pythonFile.callAttr("main", data);
+        String result = prediction.toString();
+
+        // Inform the user about statistics, predicting their current situation...
+        Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+
         return true; // Esta linea esta a voleo, revisar !
     }
 
@@ -640,28 +759,6 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         return data.toString();
     }
 
-    // Define the risk controls
-    public void dataTreatment(List<ReadingData> history){
-        for (ReadingData reading: history){
-
-        }
-
-        for(int i = 0;i < history.size(); ++i){
-            List<GlucoseData> glucoseList = history.get(i).getHistory();
-
-            for (int j = 0; j < glucoseList.size()-1; ++j){
-                float glucose = glucoseList.get(j+1).glucose();
-                // String nuevo = Float.toString(glucose);
-                glucoseList.get(j).setGlucoseLevelRaw(Float.toString(glucose));
-            }
-            // history.get(i).setHistory(glucose);
-
-        }
-
-    }
-
-
-
 
     public void export(View view){
         // Check permissions
@@ -686,7 +783,7 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             for (GlucoseData glucose: trend) {
                 data.append(glucose.getId() + "," + glucose.getTimezoneOffsetInMinutes() + "," + glucose.getDate() + ","
                         + glucose.glucose() + "," + glucose.getHorario_comer() + "," + glucose.getFood_type() + "," +
-                        glucose.isSport() + "," + "" + "," + glucose.isTrendData() + "," + glucose.isStress() +
+                        glucose.isSport() + "," + glucose.getTrend() + "," + glucose.isTrendData() + "," + glucose.isStress() +
                         "," + glucose.getRisk()+ "\n");
             }
         }
@@ -778,9 +875,7 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         }
 
 
-        // copy data to database
         Realm realmProcessedData = Realm.getInstance(realmConfigProcessedData);
-        // commit processed data into realm
         realmProcessedData.beginTransaction();
 
         String [] nextLine = null;
@@ -812,7 +907,7 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             glucose.setHorario_comer(nextLine[4]);
             glucose.setFood_type(Integer.parseInt(nextLine[5]));
             glucose.setSport(Boolean.parseBoolean(nextLine[6]));
-            glucose.setAscendent_trend(nextLine[7]);
+            glucose.setTrend(Integer.parseInt(nextLine[7]));
             glucose.setTrendData(nextLine[8]);
             glucose.setStress(Boolean.parseBoolean(nextLine[9]));
             glucose.setRisk(Integer.parseInt(nextLine[10])); // revisar!

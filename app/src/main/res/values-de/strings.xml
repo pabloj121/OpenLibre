@@ -69,5 +69,7 @@
     <string name="data_visualization">Daten-Visualisierung</string>
     <string name="complete_glucose_data">Vollständige Glukose-Daten</string>
     <string name="no_events">No events for this day</string>
+    <string name="add_event">Ein Ereignis zum Kalender hinzufügen</string>
+    <string name="selected_day">Ausgewählter Tag: </string>
 
 </resources>
