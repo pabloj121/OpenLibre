@@ -5,7 +5,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: "realm-android"
 // To add Firebase
 apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.chaquo.python'        // To add the Python interpreter
+apply plugin: 'com.chaquo.python' // To add the Python interpreter
 // Apply the Crashlytics Gradle plugin
 apply plugin: 'com.google.firebase.crashlytics'
 
@@ -30,8 +30,8 @@ android {
                 install "pandas"
                 install "sklearn"
                 install "numpy"
-                install "XGBoost"
             }
+            // install "XGBoost"
         }
     }
     buildTypes {
@@ -61,7 +61,6 @@ android {
             }
         }
     }
-
 }
 
 dependencies {
@@ -103,13 +102,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:19.4.0'
     implementation 'com.firebaseui:firebase-ui-auth:6.3.0'
     implementation 'com.google.android.gms:play-services-auth:18.1.0'
-    // Required only if Facebook login support is required
-    // implementation 'com.facebook.android:facebook-android-sdk:4.x'
     // Calendar View
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.10'
-    implementation 'com.github.kizitonwose:CalendarView:0.4.4'
-    implementation 'com.github.tibolte:agendacalendarview:1.0.4'
-    implementation 'com.ognev.kotlin.agendacalendarview:kotlin-agendacalendarview:1.0'
 
     implementation 'com.opencsv:opencsv:4.6'
     implementation 'androidx.preference:preference-ktx:1.1.0'
@@ -121,10 +115,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
     // Add Graphs to the APP
     implementation 'com.jjoe64:graphview:4.2.2'
-
-    implementation 'com.google.firebase:firebase-ml-model-interpreter:22.0.4'
-    implementation 'org.tensorflow:tensorflow-lite:2.0.0'
 }
+
 
 // include user specific build tasks
 if (file("user.gradle").exists()) {

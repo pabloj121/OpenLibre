@@ -36,6 +36,9 @@ public class GlucoseData extends RealmObject implements Comparable<GlucoseData> 
     private boolean stress = false;
     private boolean sport = false; // horario_comer, food_type, risk, stresss, sport
     private int trend = 1;         // 0 : descendent trend, 1: not trend, 2:ascendent trend
+    private int low_insulin = 0;
+    private int fast_insulin = 0;
+
 
     public GlucoseData() {}
     public GlucoseData(SensorData sensor, int ageInSensorMinutes, int timezoneOffsetInMinutes, int glucoseLevelRaw, boolean isTrendData, long date) {
@@ -200,4 +203,19 @@ public class GlucoseData extends RealmObject implements Comparable<GlucoseData> 
 
     public void setTrend(int trend){ this.trend = trend;}
 
+    public int getLow_insulin() {
+        return low_insulin;
+    }
+
+    public void setLow_insulin(int low_insulin) {
+        this.low_insulin = low_insulin;
+    }
+
+    public int getFast_insulin() {
+        return fast_insulin;
+    }
+
+    public void setFast_insulin(int fast_insulin) {
+        this.fast_insulin = fast_insulin;
+    }
 }

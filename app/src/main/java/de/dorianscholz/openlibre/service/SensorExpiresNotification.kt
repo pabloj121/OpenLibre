@@ -66,7 +66,7 @@ class SensorExpiresNotification : AppCompatActivity() {
             val mChannel = NotificationChannel(CHANNEL_ID, name, importance)
             mChannel.description = description
             mChannel.enableVibration(true)
-            mChannel.vibrationPattern = longArrayOf(100,200,300,400,500,400,300,200,400)
+            //mChannel.vibrationPattern = longArrayOf(100,200,300,400,500,400,300,200,400)
             mChannel.setShowBadge(false)
             notificationManager.createNotificationChannel(mChannel)
         }

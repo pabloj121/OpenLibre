@@ -1,6 +1,7 @@
 package de.dorianscholz.openlibre.ui
 
 import android.Manifest
+import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -16,7 +17,7 @@ import android.widget.CalendarView.OnDateChangeListener
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
 import de.dorianscholz.openlibre.R
-import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -36,20 +37,21 @@ class AgendaFragment : Fragment() {
     private lateinit var event_title:EditText
     private lateinit var event_description:EditText
     private lateinit var calendar:Calendar
-    private lateinit var listView: ListView
-    private lateinit var list:List<String>
-    lateinit var adapter: ArrayAdapter<*>
     private lateinit var calendarEvents:MutableList<CalendarEvent>
+    private var selectedDay:Int = 0
+    private var selectedMonth:Int = 0
+    private var selectedYear:Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            //param1 = it.getString(ARG_PARAM1)
-            //param2 = it.getString(ARG_PARAM2)
         }
 
         calendar = Calendar.getInstance()
-        list = listOf()
+
+        selectedDay = calendar.get(Calendar.DAY_OF_MONTH)
+        selectedMonth = calendar.get(Calendar.MONTH)
+        selectedYear = calendar.get(Calendar.YEAR)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -60,78 +62,105 @@ class AgendaFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // set on click listener
+
         add_event_button = view.findViewById(R.id.addEvent)
         calendarView = view.findViewById(R.id.calendar)
         event_title = view.findViewById(R.id.event_title)
         event_description = view.findViewById(R.id.event_description)
-        listView = view.findViewById(R.id.list_view)
         calendarEvents = mutableListOf<CalendarEvent>()
 
-        // Falta volver a llamar al readCalendarEvent segun fecha
-        var listEvents = readCalendarEvent(view.context)
-
-        listEvents.forEach {
-            list = list + listOf(it.getTitle() + "." + it.getDescription())
-        }
-
-        //list = listOf("hola", "adios", "que tal")
-
-        // Adding the components to the list
-        adapter = ArrayAdapter(view.context, android.R.layout.simple_list_item_1,list)
-        listView.setAdapter(adapter)
-
-        /*
-        add_event_button.setOnClickListener() {
-            object : View.OnClickListener {
-                override fun onClick(view: View) {
-                    Toast.makeText(view.context, "hola", Toast.LENGTH_SHORT).show()
-                    System.out.println(event_title.toString() + ":" + event_title.text.toString())
-                    addEvent(view, event_title.text.toString(), event_description.text.toString())
-                }
-            }
-        }
-        */
-
         add_event_button.setOnClickListener(View.OnClickListener {
-            //Toast.makeText(view.context, event_title.toString() + ":" + event_title.text.toString(), Toast.LENGTH_SHORT).show()
             addEvent(view, event_title.text.toString(), event_description.text.toString())
         })
 
         calendarView.setOnDateChangeListener(OnDateChangeListener {
             view, year, month, dayOfMonth ->
-            //calendar = Calendar.getInstance()
             calendar.set(year, month, dayOfMonth)
             calendar.get(Calendar.DAY_OF_WEEK)
 
-            val string:String = "Día seleccionado: " + dayOfMonth.toString() + "/" + month.toString() + "/" + year.toString()
+            selectedDay = dayOfMonth
+            selectedMonth = month
+            selectedYear = year
 
             if (view != null) {
+                val string:String = "Día seleccionado: " + dayOfMonth.toString() + "/" +
+                        month.toString() + "/" + year.toString()
+
                 Toast.makeText(view.context, string, Toast.LENGTH_SHORT).show()
+                seeCalendarData(calendar.timeInMillis)
             }
         })
     }
 
-    //fun readCalendarEvent(context: Context): ArrayList<String?>? {
-    fun readCalendarEvent(context: Context): MutableList<CalendarEvent> {
+
+    fun readCalendar(context: Context): MutableList<CalendarEvent>{
+        calendarEvents.clear()
 
         // Permissions
         if (checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
 
-            val cursor:Cursor? = context.getContentResolver()
-                    .query(Uri.parse("content://com.android.calendar/events"), arrayOf("calendar_id", "title", "description",
-                            "dtstart", "dtend", "eventLocation"), null,
-                            null, null)
+            val DEBUG_TAG: String = "MyActivity"
+            val INSTANCE_PROJECTION: Array<String> = arrayOf(
+                    CalendarContract.Instances.EVENT_ID, // 0
+                    CalendarContract.Instances.BEGIN, // 1
+                    CalendarContract.Instances.TITLE, // 2
+                    CalendarContract.Instances.DESCRIPTION  // 3
+            )
 
-            cursor?.moveToFirst()
+            // The indices for the projection array above.
+            val PROJECTION_ID_INDEX: Int = 0
+            val PROJECTION_BEGIN_INDEX: Int = 1
+            val PROJECTION_TITLE_INDEX: Int = 2
+            val PROJECTION_DESCRIPTION_INDEX: Int = 3
 
-            // fetching calendars name
-            val CNames = arrayOfNulls<String>(cursor!!.getCount())
+            // Specify the date range you want to search for recurring event instances
+            // In this case, the whole day selected
+            val startMillis: Long = Calendar.getInstance().run {
+                set(selectedYear, selectedMonth, selectedDay, 0, 0)
+                timeInMillis
+            }
+            val endMillis: Long = Calendar.getInstance().run {
+                set(selectedYear, selectedMonth, selectedDay, 23, 59)
+                timeInMillis
+            }
 
-            for (i in CNames.indices) {
-                calendarEvents.add(CalendarEvent(cursor.getString(1),cursor.getString(2)))
-                CNames[i] = cursor.getString(1)
-                cursor.moveToNext()
+            // The ID of the recurring event whose instances you are searching
+            // for in the Instances table
+            val selection: String = "${CalendarContract.Instances.EVENT_ID} = ?"
+            val selectionArgs: Array<String> = arrayOf("207")
+
+            // Construct the query with the desired date range.
+            val builder: Uri.Builder = CalendarContract.Instances.CONTENT_URI.buildUpon()
+            ContentUris.appendId(builder, startMillis)
+            ContentUris.appendId(builder, endMillis)
+
+            // Submit the query
+            //val cur: Cursor = contentResolver.query(
+            val cur: Cursor? = context.contentResolver.query(     //contentResolver.query(
+                    builder.build(),
+                    INSTANCE_PROJECTION,
+                    selection,
+                    selectionArgs, null
+            )
+
+            if (cur != null) {
+                while (cur.moveToNext()) {
+                    // Get the field values
+                    val eventID: Long = cur.getLong(PROJECTION_ID_INDEX)
+                    val beginVal: Long = cur.getLong(PROJECTION_BEGIN_INDEX)
+                    val title: String = cur.getString(PROJECTION_TITLE_INDEX)
+                    val description = cur.getString(PROJECTION_DESCRIPTION_INDEX)
+
+                    // Do something with the values.
+                    calendarEvents.add(CalendarEvent(eventID, beginVal, title, description))
+
+                    // Log.i(DEBUG_TAG, "Event: $title")
+                    val calendar = Calendar.getInstance().apply {
+                        timeInMillis = beginVal
+                    }
+                    val formatter = SimpleDateFormat("MM/dd/yyyy")
+                    // Log.i(DEBUG_TAG, "Date: ${formatter.format(calendar.time)}")
+                }
             }
 
         } // Read calendar has not been granted
@@ -145,29 +174,17 @@ class AgendaFragment : Fragment() {
             // You can directly ask for the permission.
             requestPermissions(arrayOf(Manifest.permission.READ_CALENDAR), 1)
         }
-
-        /*
-        val cursor:Cursor? = context.getContentResolver()
-                .query(Uri.parse("content://com.android.calendar/events"), arrayOf("calendar_id", "title", "description",
-                        "dtstart", "dtend", "eventLocation"), null,
-                        null, null)
-
-
-        cursor?.moveToFirst()
-
-        // fetching calendars name
-        val CNames = arrayOfNulls<String>(cursor!!.getCount())
-
-        for (i in CNames.indices) {
-            calendarEvents.add(CalendarEvent(cursor.getString(1),cursor.getString(2)))
-            CNames[i] = cursor.getString(1)
-            cursor.moveToNext()
-        }
-        */
-        //return nameOfEvent
         return calendarEvents
     }
 
+    fun seeCalendarData(startMillis:Long){
+        val builder: Uri.Builder = CalendarContract.CONTENT_URI.buildUpon()
+                .appendPath("time")
+        ContentUris.appendId(builder, startMillis)
+        val intent = Intent(Intent.ACTION_VIEW)
+                .setData(builder.build())
+        startActivity(intent)
+    }
 
     fun addEvent(view: View, title: String, description: String) {
 
@@ -183,7 +200,6 @@ class AgendaFragment : Fragment() {
             intent.putExtra(CalendarContract.Events.DTSTART, calendar.timeInMillis)
             intent.putExtra(CalendarContract.Events.HAS_ALARM, false)
             intent.putExtra(CalendarContract.Events.ALLOWED_REMINDERS, false)
-
 
             //intent.putExtra(CalendarContract.Events.ALL_DAY, false)
             startActivity(intent)
@@ -201,37 +217,6 @@ class AgendaFragment : Fragment() {
 
     }
 
-    /*
-    fun readingEvents(view: View){
-
-        val cursor: Cursor = cr.query(Uri.parse("content://calendar/events"), arrayOf("calendar_id", "title", "description", "dtstart", "dtend", "eventLocation"), null, null, null)
-        //Cursor cursor = cr.query(Uri.parse("content://calendar/calendars"), new String[]{ "_id", "name" }, null, null, null);
-        //Cursor cursor = cr.query(Uri.parse("content://calendar/calendars"), new String[]{ "_id", "name" }, null, null, null);
-        var add: String? = null
-        cursor.moveToFirst()
-        val CalNames = arrayOfNulls<String>(cursor.getCount())
-        val CalIds = IntArray(cursor.getCount())
-        for (i in CalNames.indices) {
-            CalIds[i] = cursor.getInt(0)
-            CalNames[i] = """
-                Event${cursor.getInt(0).toString()}: 
-                Title: ${cursor.getString(1).toString()}
-                Description: ${cursor.getString(2).toString()}
-                Start Date: ${Date(cursor.getLong(3)).toString()}
-                End Date : ${Date(cursor.getLong(4)).toString()}
-                Location : ${cursor.getString(5)}
-                """.trimIndent()
-            if (add == null) add = CalNames[i] else {
-                add += CalNames[i]
-            }
-
-            (view.findViewById(R.id.calendars) as TextView).text = add
-            cursor.moveToNext()
-        }
-        cursor.close()
-    }
-    */
-
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -246,23 +231,27 @@ class AgendaFragment : Fragment() {
     }
 }
 
-// check !
-class CalendarEvent(t: String, d: String) {
-    private var id:String=""
-    private var title:String=t
-    private var description:String=d
+class CalendarEvent(i: Long, begin: Long, tit: String, desc: String) {
+    private var id:Long = i
+    private var begin_value:Long = begin
+    private var title:String=tit
+    private var description:String=desc
 
-    fun CalendarEvent(t:String, d:String){
-        title = t
-        description = d
-    }
 
-    fun setID(i:String){
+    fun setID(i:Long){
         id = i
     }
 
-    fun getID():String{
+    fun getID():Long{
         return id
+    }
+
+    fun setBeginValue(begin:Long){
+        begin_value = begin
+    }
+
+    fun getBeginValue():Long{
+        return begin_value
     }
 
     fun setTitle(t:String){
@@ -282,7 +271,11 @@ class CalendarEvent(t: String, d: String) {
     }
 
     override fun toString():String{
-        var result:String = "Title: " + getTitle() + ". Description: " + getDescription()
+        val date = Date(begin_value)
+        val format = SimpleDateFormat("yyyy/ MM/ dd HH:mm")
+        val date_event = format.format(date)
+
+        var result:String = "Title: " + getTitle() + "Hora" + date_event + "\n. Description: " + getDescription()
         return result
     }
 

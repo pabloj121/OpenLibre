@@ -15,44 +15,33 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-
-import com.chaquo.python.PyObject;
-import com.chaquo.python.Python;
-import com.chaquo.python.android.AndroidPlatform;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.tabs.TabLayout;
-
-import androidx.annotation.RequiresPermission;
-import androidx.core.content.FileProvider;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
-import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 import com.opencsv.CSVReader;
+
+import net.sf.cglib.core.Local;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -62,12 +51,10 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -76,7 +63,6 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import de.dorianscholz.openlibre.R;
-import de.dorianscholz.openlibre.model.BloodGlucoseData;
 import de.dorianscholz.openlibre.model.GlucoseData;
 import de.dorianscholz.openlibre.model.RawTagData;
 import de.dorianscholz.openlibre.model.ReadingData;
@@ -85,11 +71,8 @@ import de.dorianscholz.openlibre.service.NfcVReaderTask;
 import de.dorianscholz.openlibre.service.SensorExpiresNotificationKt;
 import de.dorianscholz.openlibre.service.TidepoolSynchronization;
 import de.dorianscholz.openlibre.ui.login.LoginActivity;
-
-import de.dorianscholz.openlibre.ui.login.LoginActivityKt;
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -98,7 +81,6 @@ import static de.dorianscholz.openlibre.OpenLibre.GLUCOSE_TARGET_MIN;
 import static de.dorianscholz.openlibre.OpenLibre.openLibreDataPath;
 import static de.dorianscholz.openlibre.OpenLibre.realmConfigProcessedData;
 import static de.dorianscholz.openlibre.OpenLibre.realmConfigRawData;
-import static de.dorianscholz.openlibre.model.AlgorithmUtil.getDurationBreakdown;
 import static de.dorianscholz.openlibre.model.SensorData.START_DATE;
 import static de.dorianscholz.openlibre.service.NfcVReaderTask.processRawData;
 
@@ -218,11 +200,6 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         }
 
         if (mNfcAdapter != null) {
-            try {
-                mNfcAdapter.isEnabled();
-            } catch (NullPointerException e) {
-                // Drop NullPointerException
-            }
             try {
                 mNfcAdapter.isEnabled();
             } catch (NullPointerException e) {
@@ -658,71 +635,6 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
     }
 
 
-    public void trainModel(){
-        // The model will be trained every seven days, halfway through the use of the sensor
-        /*
-        LocalDate localDate = LocalDate.now();
-        String current = localDate.getDayOfMonth() + "/" + localDate.getMonth() + "/" + localDate.getYear();
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
-        Date firstDate = new Date();
-
-        try {
-            firstDate = sdf.parse(startDateString);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        Date secondDate = new Date();
-
-        System.out.println("date: " + secondDate);
-
-        try {
-            secondDate = sdf.parse(current);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("date: " + secondDate);
-
-        long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
-        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-
-        // Each five days, the model trains with the new data and is rebuilt
-        //if (diff > 7){} else{}
-
-        long last_day_period = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1);
-        List<ReadingData> history = mRealmProcessedData.where(ReadingData.class)
-                .greaterThan("timezoneOffsetInMinutes", last_day_period)
-                .findAllSorted(ReadingData.DATE, Sort.ASCENDING);
-        */
-
-        dataTreatment(first_time);
-
-        List<ReadingData>  history = mRealmProcessedData.where(ReadingData.class)
-                .findAllSorted(ReadingData.DATE, Sort.ASCENDING);
-
-        // Model should be trained with new data
-        String data = dataToCSV(history);
-
-        initPython();
-
-        Python python = Python.getInstance();
-        PyObject pythonFile = python.getModule("prediction"); // prediction.py
-        PyObject prediction = pythonFile.callAttr("main", data);
-        String result = prediction.toString();
-
-        // Inform the user about statistics, predicting their current situation...
-        Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
-    }
-
-
-    public void initPython(){
-        // "context" must be an Activity, Service or Application object from your app.
-        if (! Python.isStarted()) {
-            Python.start(new AndroidPlatform(this));
-        }
-    }
-
     public String dataToCSV(List<ReadingData> history){
         StringBuilder data = new StringBuilder();
 
@@ -743,7 +655,29 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         return data.toString();
     }
 
+    /*
+    * Transform the last glucemic control with all its data into an String
+    *
+    * @glucose: data related to the last glucemic scan
+     */
 
+    public String currentDataToCSV(GlucoseData glucose){
+        StringBuilder data = new StringBuilder();
+
+        data.append(glucose.getId() + "," + glucose.getTimezoneOffsetInMinutes() + "," + glucose.getDate() + ","
+                + glucose.glucose() + "," + glucose.getHorario_comer() + "," + glucose.getFood_type() + "," +
+                glucose.isSport() + "," + "" + "," + glucose.isTrendData() + "," + glucose.isStress() +
+                "," + glucose.getRisk()+ "\n");
+
+        return data.toString();
+    }
+
+    /*
+    * Export the data both to the external storage or online
+    *
+    * @view: contains the view that is displayed after pressing the button
+    *
+    */
     public void export(View view){
         // Check permissions
         Intent intent = new Intent(this, SensorExpiresNotificationKt.class);
@@ -758,16 +692,20 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
         // Cabecera de la función !
         // class is equal to risk
-        data.append("id,timezone,date,glucose,horario_comer,food_type,sport,trend,is_trend,stress,class\n");
+        data.append("id,timezone,date,glucose,fast_insulin,low_insulin,horario_comer," +
+                "food_type,sport,trend,is_trend,stress,class\n");
         // comprobar fecha  5 días!
         for (ReadingData read: history2) {
-            RealmList<GlucoseData> trend = read.getTrend();
+            //RealmList<GlucoseData> trend = read.getTrend();
+            RealmList<GlucoseData> history = read.getHistory();
 
             // Exporting only trend and not history?!
-            for (GlucoseData glucose: trend) {
+            //for (GlucoseData glucose: trend) {
+            for (GlucoseData glucose: history) {
                 data.append(glucose.getId() + "," + glucose.getTimezoneOffsetInMinutes() + "," + glucose.getDate() + ","
-                        + glucose.glucose() + "," + glucose.getHorario_comer() + "," + glucose.getFood_type() + "," +
-                        glucose.isSport() + "," + glucose.getTrend() + "," + glucose.isTrendData() + "," + glucose.isStress() +
+                        + glucose.glucose() + "," + glucose.getFast_insulin() + "," + glucose.getLow_insulin() + ","
+                        + glucose.getHorario_comer() + "," + glucose.getFood_type() + "," + glucose.isSport() + ","
+                        + glucose.getTrend() + "," + glucose.isTrendData() + "," + glucose.isStress() +
                         "," + glucose.getRisk()+ "\n");
             }
         }
@@ -823,6 +761,13 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             e.printStackTrace();
         }
     }
+
+    /*
+    * This function imports the data from a file stored in the phone storage
+    *
+    * @path : path to the file
+    *
+    */
 
     public void importCSV(String path) throws IOException {
         SensorData sensor = null;
@@ -883,18 +828,20 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             previousData.setTimezoneOffsetInMinutes(nextLine[1]);
             previousData.setDate(nextLine[2]);
 
-            // "id,timezone,date,glucose,horario_comer,food_type,sport,trend,is_trend,stress,risk\n";
+            // "id,timezone,date,glucose,fast_insulin,low_insulin,horario_comer,food_type,sport,trend,is_trend,stress,risk\n";
             glucose.setId(nextLine[0]);
             glucose.setTimezoneOffsetInMinutes(Integer.parseInt(nextLine[1]));
             glucose.setDate(nextLine[2]);
             glucose.setGlucoseLevelRaw(nextLine[3]);
-            glucose.setHorario_comer(nextLine[4]);
-            glucose.setFood_type(Integer.parseInt(nextLine[5]));
-            glucose.setSport(Boolean.parseBoolean(nextLine[6]));
-            glucose.setTrend(Integer.parseInt(nextLine[7]));
-            glucose.setTrendData(nextLine[8]);
-            glucose.setStress(Boolean.parseBoolean(nextLine[9]));
-            glucose.setRisk(Integer.parseInt(nextLine[10])); // revisar!
+            glucose.setFast_insulin(Integer.parseInt(nextLine[4]));
+            glucose.setLow_insulin(Integer.parseInt(nextLine[5]));
+            glucose.setHorario_comer(nextLine[6]);
+            glucose.setFood_type(Integer.parseInt(nextLine[7]));
+            glucose.setSport(Boolean.parseBoolean(nextLine[8]));
+            glucose.setTrend(Integer.parseInt(nextLine[9]));
+            glucose.setTrendData(nextLine[10]);
+            glucose.setStress(Boolean.parseBoolean(nextLine[11]));
+            glucose.setRisk(Integer.parseInt(nextLine[12])); // revisar!
 
             // Its necessary to save the trend
             if (glucose.isTrendData()){
@@ -926,15 +873,113 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         }   catch (NullPointerException e){
             e.printStackTrace();
         }
-
-        /*
-        * CSVReader reader = new CSVReader(new FileReader("emps.csv"), ',');
-        */
     }
+
+    /*
+     *   This function inform us whether we should train the model now or wait
+     */
+
+    public boolean timeToTrain(){
+        // The model will be trained every seven days, halfway through the use of the sensor
+        LocalDate localDate = LocalDate.now();
+        String current = localDate.getDayOfMonth() + "/" + localDate.getMonth() + "/" + localDate.getYear();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+        Date firstDate = new Date();
+
+        try {
+            firstDate = sdf.parse(startDateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Date secondDate = new Date();
+
+        System.out.println("date: " + secondDate);
+
+        try {
+            secondDate = sdf.parse(current);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("date: " + secondDate);
+
+        long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
+        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+        // long last_day_period = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1);
+
+        // Each seven days, the model trains with the new data and is rebuilt
+        if (diff > TimeUnit.DAYS.toMillis(7)){
+            return true;
+        } else{
+            return false;
+        }
+
+    }
+
+    public void initPython(){
+        // "context" must be an Activity, Service or Application object from your app.
+        if (! Python.isStarted()) {
+            Python.start(new AndroidPlatform(this));
+        }
+    }
+
+    public void trainModel(){
+        dataTreatment(first_time);
+
+        List<ReadingData>  history = mRealmProcessedData.where(ReadingData.class)
+                .findAllSorted(ReadingData.DATE, Sort.ASCENDING);
+
+        // Model should be trained with new data
+        String data = dataToCSV(history);
+        ReadingData lastRegistry = history.get(history.size());
+        RealmList<GlucoseData> h = lastRegistry.getHistory();
+        GlucoseData last_glucose_data = h.get(h.size());
+
+        String current = currentDataToCSV(last_glucose_data);
+
+        initPython();
+
+        Python python = Python.getInstance();
+        PyObject pythonFile = python.getModule("prediction"); // prediction.py
+        PyObject prediction = pythonFile.callAttr("main", data, current);
+        String result = prediction.toString();
+
+        // Inform the user about statistics, predicting their current situation...
+        Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+    }
+
+    /*
+    public void predictFromModel(){
+        initPython();
+
+        Python python = Python.getInstance();
+        PyObject pythonFile = python.getModule("prediction"); // prediction.py
+        PyObject prediction = pythonFile.callAttr("predictFromModel", data);
+        String result = prediction.toString();
+
+        // Inform the user about statistics, predicting their current situation...
+        Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+    }
+     */
+
+
+
 
     public void onNfcReadingFinished(ReadingData readingData) {
         mLastScanTime = new Date().getTime();
+
+        // Deploy DialogFragment to complete the data and modify the database
+        new GlucoseFormFragment().show(getSupportFragmentManager(),"glucoseformfragment");
         onShowScanData(readingData);
+
+        if (timeToTrain()){
+            trainModel();
+        } else{
+            //predictFromModel ();
+        }
+
         TidepoolSynchronization.getInstance().startTriggeredSynchronization(getApplicationContext());
     }
 
@@ -1073,6 +1118,4 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         } else
             return false;
     }
-
-
 }

@@ -22,58 +22,86 @@
         android:background="?android:attr/listDivider" />
 
     <!-- Horario de comer -->
-    <RadioGroup
-        android:id="@+id/food_time_schedule"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="@dimen/activity_vertical_margin"
-        android:text="Horario de comer">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:text="Comida"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"/>
 
-        <RadioButton
-            android:text="Antes de comer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-        <RadioButton
-            android:text="Recién comido"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-        <RadioButton
-            android:text="Después de cenar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-        />
-    </RadioGroup>
+            <RadioGroup
+                android:id="@+id/food_time_schedule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/activity_vertical_margin"
+                android:text="Horario de comer">
 
-    <!-- Tipo de comida -->
-    <RadioGroup
-        android:id="@+id/food_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="@dimen/activity_vertical_margin"
-        android:text="Food type">
+                <RadioButton
+                    android:text="Antes de comer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+                <RadioButton
+                    android:text="Recién comido"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+                <RadioButton
+                    android:text="Después de cenar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+                />
+            </RadioGroup>
+        </LinearLayout>
 
-        <RadioButton
-            android:text="Pasta"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-        <RadioButton
-            android:text="Arroz"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-        <RadioButton
-            android:text="Legumbres"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-            />
-    </RadioGroup>
+            android:orientation="vertical">
+
+            <TextView
+                android:text="Tipo de comida"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"/>
+
+            <!-- Tipo de comida -->
+            <RadioGroup
+                android:id="@+id/food_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/activity_vertical_margin"
+                android:text="Food type">
+
+                <RadioButton
+                    android:text="Pasta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+                <RadioButton
+                    android:text="Arroz"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+                <RadioButton
+                    android:text="Legumbres"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+                />
+            </RadioGroup>
+        </LinearLayout>
+
+    </LinearLayout>
 
 
     <!-- Stress -->
@@ -83,46 +111,88 @@
         android:layout_height="1dp"
         android:background="?android:attr/listDivider" />
 
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/fast_insulin"
+            android:hint="Insulina rápida"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"/>
+
+        <EditText
+            android:id="@+id/low_insulin"
+            android:hint="Insulina lenta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:layout_marginRight="50dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <!-- Deporte -->
+        <Switch
+            android:id="@+id/sport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sport"
+            android:layout_marginLeft="50dp"/>
+
+        <EditText
+            android:id="@+id/start_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hora inicial"
+            android:inputType="time"
+            android:visibility="invisible"/>
+
+        <EditText
+            android:id="@+id/end_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hora final"
+            android:inputType="time"
+            android:visibility="invisible"
+            android:layout_marginRight="50dp"/>
+    </LinearLayout>
+
     <Switch
         android:id="@+id/stress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Stress"
-        android:layout_gravity="center"/>
+        android:layout_marginLeft="100dp"
+        android:layout_gravity="center_horizontal"/>
 
+    <!-- Dias especiales -->
+    <!--
     <View
         android:id="@+id/divider3"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="?android:attr/listDivider" />
-
-    <!-- Deporte -->
-    <Switch
-        android:id="@+id/sport"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sport"
-        android:layout_gravity="center"/>
-    <!-- Dias especiales -->
-    <TextView
-        android:id="@+id/hora_inicio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hora inicial"
-        android:inputType="time"/>
-    <TextView
-        android:id="@+id/hora_final"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hora final"
-        android:digits="0123456789:"
-        android:inputType="time"/>
     <View
         android:id="@+id/divider4"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="?android:attr/listDivider" />
+    -->
 
+    <Button
+        android:id="@+id/glucose_addition_information"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_information"
+        android:layout_gravity="center_horizontal"/>
+    <!--
     <com.google.android.material.button.MaterialButton
         android:id="@+id/glucose_addition_information"
         android:layout_width="wrap_content"
@@ -132,6 +202,6 @@
         android:theme="@style/Widget.MaterialComponents.Button"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
         android:typeface="sans" />
-
+    -->
 
 </LinearLayout>

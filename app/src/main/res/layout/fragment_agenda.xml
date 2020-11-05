@@ -58,6 +58,7 @@
 
     </LinearLayout>
 
+    <!--
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="200dp">
@@ -66,8 +67,13 @@
             android:id="@+id/list_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-
     </LinearLayout>
-
+    -->
+    <TextView
+        android:text="Pulsa en el calendario para ver los eventos de ese día"
+        android:gravity="center_horizontal"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="50dp"/>
 
 </LinearLayout>
