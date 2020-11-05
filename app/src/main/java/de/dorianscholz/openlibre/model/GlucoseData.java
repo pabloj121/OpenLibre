@@ -32,7 +32,7 @@ public class GlucoseData extends RealmObject implements Comparable<GlucoseData> 
     // New fields
     private int horario_comer = 0;  // By default
     private int food_type = 0;      // By default
-    private int risk = 0;
+    private int risk = 0;           // O: no risk, -1: low risk, 1: great risk
     private boolean stress = false;
     private boolean sport = false; // horario_comer, food_type, risk, stresss, sport
     private int trend = 1;         // 0 : descendent trend, 1: not trend, 2:ascendent trend

@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -119,10 +120,24 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
     Button filePicker;
     Intent importFileIntent;
 
+    ArrayList<Pair<String, Long>> saved = new ArrayList<>();
+    String LOW_INSULIN = "LOW_INSULIN";
+    String FAST_INSULIN = "FAST_INSULIN";
+    String STRESS = "STRESS";
+    String START_SPORT = "START_SPORT";
+    String END_SPORT = "END_SPORT";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
+
+        // recover values from savedInstanceState
+        saved.add(new Pair(LOW_INSULIN, savedInstanceState.get(LOW_INSULIN)));
+        saved.add(new Pair(FAST_INSULIN, savedInstanceState.get(FAST_INSULIN)));
+        saved.add(new Pair(STRESS, savedInstanceState.get(STRESS)));
+        saved.add(new Pair(START_SPORT, savedInstanceState.get(START_SPORT)));
+        saved.add(new Pair(END_SPORT, savedInstanceState.get(END_SPORT)));
 
         // initial_date = (Date) Calendar.getInstance().getTime();
         startDate = LocalDate.now();
@@ -542,96 +557,118 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         Realm realmProcessedData = Realm.getInstance(realmConfigProcessedData);
         realmProcessedData.beginTransaction();
 
-        // A los 3 ultimos no les pongo riesgo ! Hay que tener en cuenta la diferencia de tiempo
-        if (first_time){
-            history = mRealmProcessedData.where(GlucoseData.class)
-                    .findAllSorted(GlucoseData.DATE, Sort.ASCENDING);
-            setFirstTime(false);
-        } else {
-            long time_difference = TimeUnit.MINUTES.toMillis(11);
+        // Maximum difference between one scan and the next
+        Long max_difference = latest_data_processed + TimeUnit.MINUTES.toMillis(10);
+        long time_difference = TimeUnit.MINUTES.toMillis(11);
 
-            history = mRealmProcessedData.where(GlucoseData.class)
-                    .greaterThan("timezoneOffsetInMinutes", latest_data_processed - time_difference)
-                    .findAllSorted(GlucoseData.DATE, Sort.ASCENDING);
+        int iterator = 0;
+        ArrayList<Float> next_glucose = new ArrayList<Float>();
 
-            int iterator = 0;
-            ArrayList<Float> next_glucose = new ArrayList<Float>();
+        history = mRealmProcessedData.where(GlucoseData.class)
+                .greaterThan("timezoneOffsetInMinutes", latest_data_processed - time_difference)
+                .findAllSorted(GlucoseData.DATE, Sort.ASCENDING);
 
-            // To define the trend of the latest data processed
-            while(history.get(iterator).getTimezoneOffsetInMinutes() != latest_data_processed){
-                // previous_glucose.add(glucose.glucose());
-                iterator++;
-            }
+        int j = 0;
 
-            boolean proceed = true;
-
-            for (iterator = 0; iterator < history.size()-3 && proceed; ++iterator){
-                next_glucose.add(history.get(iterator+3).glucose());
-                next_glucose.add(history.get(iterator+2).glucose());
-                next_glucose.add(history.get(iterator+1).glucose());
-
-                if (next_glucose.get(0) > GLUCOSE_TARGET_MAX || next_glucose.get(0) < GLUCOSE_TARGET_MIN){
-                    history.get(iterator+3).setRisk(0);
-                }else{
-
-                }
-
-            }
-
-            for (iterator = 0; iterator < history.size()-3; ++iterator){
-                int aux_iterator = iterator+3;
-                time_difference = history.get(iterator).getTimezoneOffsetInMinutes() + TimeUnit.MINUTES.toMillis(20);
-
-                if (history.get(aux_iterator).getTimezoneOffsetInMinutes() > time_difference) {
-                    --aux_iterator;
-                }
+        for (iterator = 0; iterator < history.size()-3; ++iterator){
+            next_glucose.add(history.get(iterator+3).glucose());
+            next_glucose.add(history.get(iterator+2).glucose());
+            next_glucose.add(history.get(iterator+1).glucose());
 
 
-                while(aux_iterator > iterator){
-                    if (history.get(aux_iterator).getTimezoneOffsetInMinutes() < time_difference) {
-                        if (history.get(aux_iterator).glucose() > GLUCOSE_TARGET_MAX) {
+            // Check the following three scans to determine the risk
+            for (j = iterator; j < iterator+3; ++j){
+                int index = 3;
+                int difference = history.get(j+index).getTimezoneOffsetInMinutes() -
+                        history.get(iterator).getTimezoneOffsetInMinutes();
 
-                        } else { // < GLUCOSE_TARGET_MIN
-
-                        }
+                // Check if the following scans are temporarily next
+                if (difference < max_difference ){
+                    if (history.get(j+index).glucose() > GLUCOSE_TARGET_MAX){          // above the maximum target
+                        history.get(j+index).setRisk(1);
+                    } else if (history.get(j+index).glucose() < GLUCOSE_TARGET_MIN){   // under the minimum target
+                        history.get(j+index).setRisk(-1);
+                    } else{         // within the targets
+                        history.get(j+index).setRisk(0);
                     }
-                    --aux_iterator;
                 }
+                --index;
+            }
 
-                if (history.get(iterator+3).getTimezoneOffsetInMinutes() < time_difference){
-                    if (history.get(iterator+3).glucose() > GLUCOSE_TARGET_MAX){
+            // Check the previous scans to define the trend
+            if (iterator > 1){ // 2 or greater
+                time_difference = history.get(iterator).getTimezoneOffsetInMinutes() -
+                        history.get(iterator-2).getTimezoneOffsetInMinutes();
+                if (time_difference < max_difference){
+                    float glucose_difference = history.get(iterator).glucose() -
+                            history.get(iterator-2).glucose();
+
+                    if (glucose_difference > 15){           // descendent trend
+                        history.get(iterator).setTrend(0);
+                    } else if (glucose_difference < 15){    // ascendent trend
+                        history.get(iterator).setTrend(2);
+                    } else{                                 // not trend
+                        history.get(iterator).setTrend(1);
+                    }
+
+                }
+            }
+
+        }
+
+        latest_data_processed = history.get(history.size()-3).getTimezoneOffsetInMinutes();
+
+        // Check the insulin, sport, stress
+
+
+
+
+        /*
+        for (iterator = 0; iterator < history.size()-3; ++iterator){
+            int aux_iterator = iterator+3;
+            time_difference = history.get(iterator).getTimezoneOffsetInMinutes() + TimeUnit.MINUTES.toMillis(20);
+
+            if (history.get(aux_iterator).getTimezoneOffsetInMinutes() > time_difference) {
+                --aux_iterator;
+            }
+
+
+            while(aux_iterator > iterator){
+                if (history.get(aux_iterator).getTimezoneOffsetInMinutes() < time_difference) {
+                    if (history.get(aux_iterator).glucose() > GLUCOSE_TARGET_MAX) {
 
                     } else { // < GLUCOSE_TARGET_MIN
 
                     }
-                } else{ // Takes into account the next two values
+                }
+                --aux_iterator;
+            }
+
+            if (history.get(iterator+3).getTimezoneOffsetInMinutes() < time_difference){
+                if (history.get(iterator+3).glucose() > GLUCOSE_TARGET_MAX){
+
+                } else { // < GLUCOSE_TARGET_MIN
 
                 }
+            } else{ // Takes into account the next two values
 
             }
-
-
-
-
-        }
-
-        /*
-        for(int i = 0;i < history.size(); ++i){
-            List<GlucoseData> glucoseList = history.get(i).getHistory();
-
-            for (int j = 0; j < glucoseList.size()-1; ++j){
-                float glucose = glucoseList.get(j+1).glucose();
-                // String nuevo = Float.toString(glucose);
-                glucoseList.get(j).setGlucoseLevelRaw(Float.toString(glucose));
-            }
-            // history.get(i).setHistory(glucose);
 
         }
         */
+
+
         // !
         ReadingData readingData = realmProcessedData.copyToRealmOrUpdate(data_processed);
         realmProcessedData.commitTransaction();
         realmProcessedData.close();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        // Put information to be saved
+
+        super.onSaveInstanceState(savedInstanceState);
     }
 
 
@@ -735,9 +772,7 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         }
         // Finish writing locally
 
-        try{
-            // Saving the file into device
-            //FileOutputStream
+        try{ // Saving the file into device
             out = openFileOutput("data.csv", Context.MODE_PRIVATE);
             out.write((data.toString()).getBytes());
             out.close();

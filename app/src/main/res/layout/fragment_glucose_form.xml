@@ -3,37 +3,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context=".ui.GlucoseFormFragment"
-    android:layout_margin="@dimen/activity_vertical_margin">
+    tools:context=".ui.GlucoseFormFragment">
 
     <TextView
-        android:text= "@string/add_information"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
         android:layout_gravity="center"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:text="@string/add_information"
+        android:textSize="25sp" />
+
     <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:scrollbarSize="@dimen/activity_vertical_margin"
-        android:background="?android:attr/listDivider" />
+        android:background="?android:attr/listDivider"
+        android:scrollbarSize="@dimen/activity_vertical_margin" />
 
     <!-- Horario de comer -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <TextView
-                android:text="Comida"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_gravity="center_horizontal"
+                android:text="Comida" />
 
             <RadioGroup
                 android:id="@+id/food_time_schedule"
@@ -44,20 +47,25 @@
                 android:text="Horario de comer">
 
                 <RadioButton
-                    android:text="Antes de comer"
+                    android:id="@+id/ftime1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:text="Antes de comer" />
+
                 <RadioButton
-                    android:text="Recién comido"
+                    android:id="@+id/ftime2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:text="Recién comido" />
+
                 <RadioButton
-                    android:text="Después de cenar"
+                    android:id="@+id/ftime3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:text="Después de cenar" />
                 />
             </RadioGroup>
         </LinearLayout>
@@ -68,10 +76,10 @@
             android:orientation="vertical">
 
             <TextView
-                android:text="Tipo de comida"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_gravity="center_horizontal"
+                android:text="Tipo de comida" />
 
             <!-- Tipo de comida -->
             <RadioGroup
@@ -83,20 +91,25 @@
                 android:text="Food type">
 
                 <RadioButton
-                    android:text="Pasta"
+                    android:id="@+id/ftype1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:text="Pasta" />
+
                 <RadioButton
-                    android:text="Arroz"
+                    android:id="@+id/ftype2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:text="Arroz" />
+
                 <RadioButton
-                    android:text="Legumbres"
+                    android:id="@+id/ftype3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:text="Legumbres" />
                 />
             </RadioGroup>
         </LinearLayout>
@@ -118,20 +131,20 @@
 
         <EditText
             android:id="@+id/fast_insulin"
-            android:hint="Insulina rápida"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="number"
             android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"/>
+            android:layout_marginRight="40dp"
+            android:hint="Insulina rápida"
+            android:inputType="number" />
 
         <EditText
             android:id="@+id/low_insulin"
-            android:hint="Insulina lenta"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:layout_marginRight="50dp"/>
+            android:layout_marginRight="50dp"
+            android:hint="Insulina lenta"
+            android:inputType="number" />
     </LinearLayout>
 
     <LinearLayout
@@ -143,65 +156,39 @@
             android:id="@+id/sport"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sport"
-            android:layout_marginLeft="50dp"/>
+            android:layout_marginLeft="50dp"
+            android:text="Sport" />
 
         <EditText
             android:id="@+id/start_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hora inicial"
             android:inputType="time"
-            android:visibility="invisible"/>
+            android:text="Hora inicial" />
 
         <EditText
             android:id="@+id/end_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hora final"
+            android:layout_marginRight="50dp"
             android:inputType="time"
-            android:visibility="invisible"
-            android:layout_marginRight="50dp"/>
+            android:text="Hora final" />
     </LinearLayout>
 
     <Switch
         android:id="@+id/stress"
+        android:text="Stress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Stress"
-        android:layout_marginLeft="100dp"
-        android:layout_gravity="center_horizontal"/>
-
-    <!-- Dias especiales -->
-    <!--
-    <View
-        android:id="@+id/divider3"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
-    <View
-        android:id="@+id/divider4"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
-    -->
+        android:layout_marginVertical="30dp"
+        android:layout_gravity="center_horizontal"
+        android:visibility="visible" />
 
     <Button
         android:id="@+id/glucose_addition_information"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/add_information"
-        android:layout_gravity="center_horizontal"/>
-    <!--
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/glucose_addition_information"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/add_information"
-        android:theme="@style/Widget.MaterialComponents.Button"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-        android:typeface="sans" />
-    -->
+        android:layout_gravity="center_horizontal"
+        android:text="@string/add_information" />
 
 </LinearLayout>
