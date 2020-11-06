@@ -111,8 +111,8 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
     private FirebaseAnalytics mFirebaseAnalytics;
 
-    private LocalDate startDate;
-    private String startDateString;
+    // Store the last time the app was trained. To control the periodicity.
+    private Long startDate = Long.valueOf(0);
     private long latest_data_processed;
     private boolean first_time = true;
 
@@ -124,24 +124,55 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
     String LOW_INSULIN = "LOW_INSULIN";
     String FAST_INSULIN = "FAST_INSULIN";
     String STRESS = "STRESS";
-    String START_SPORT = "START_SPORT";
     String END_SPORT = "END_SPORT";
+    boolean train = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
 
-        // recover values from savedInstanceState
+        Bundle extra = getIntent().getExtras();
+
+        if (extra != null){ // Receiving data from the user
+            train = true;
+
+            // Collect the data
+            saved.add(new Pair("FAST_INSULIN_UNITS", extra.getLong("FAST_INSULIN_UNITS")));
+            saved.add(new Pair("LOW_INSULIN_UNITS", extra.getLong("LOW_INSULIN_UNITS")));
+            saved.add(new Pair("LOW_INSULIN_TIME", extra.getLong("LOW_INSULIN_TIME")));
+            saved.add(new Pair("FAST_INSULIN_TIME", extra.getLong("FAST_INSULIN_TIME")));
+            saved.add(new Pair("END_SPORT", extra.getLong("END_SPORT")));
+            saved.add(new Pair("STRESS", extra.getLong("STRESS")));
+
+            // We have received information from the user and that is the
+            // signal to automatically train the data or make a prediction.
+            if (timeToTrain()){
+                trainModel();
+            }else{
+                makePrediction();
+            }
+        } else {            // Saving previously stored data
+            saved.add(new Pair("LOW_INSULIN_UNITS", savedInstanceState.get("LOW_INSULIN_UNITS")));
+            saved.add(new Pair("FAST_INSULIN_UNITS", savedInstanceState.get("FAST_INSULIN_UNITS")));
+            saved.add(new Pair("LOW_INSULIN_TIME", savedInstanceState.get("LOW_INSULIN_TIME")));
+            saved.add(new Pair("FAST_INSULIN_TIME", savedInstanceState.get("FAST_INSULIN_TIME")));
+            saved.add(new Pair("END_SPORT", savedInstanceState.get("END_SPORT")));
+            saved.add(new Pair("STRESS", savedInstanceState.get("STRESS")));
+            startDate = (Long) savedInstanceState.get("START_DATE");
+        }
+
+
+
+        // Recover values from savedInstanceState
+        /*
         saved.add(new Pair(LOW_INSULIN, savedInstanceState.get(LOW_INSULIN)));
         saved.add(new Pair(FAST_INSULIN, savedInstanceState.get(FAST_INSULIN)));
         saved.add(new Pair(STRESS, savedInstanceState.get(STRESS)));
-        saved.add(new Pair(START_SPORT, savedInstanceState.get(START_SPORT)));
         saved.add(new Pair(END_SPORT, savedInstanceState.get(END_SPORT)));
+        */
 
         // initial_date = (Date) Calendar.getInstance().getTime();
-        startDate = LocalDate.now();
-        startDateString = startDate.getDayOfMonth() + "/" + startDate.getMonth() + "/" + startDate.getYear();
         latest_data_processed = 0;
 
         mRealmRawData = Realm.getInstance(realmConfigRawData);
@@ -525,12 +556,7 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
                 finish();
             }
 
-        } else if ( id == R.id.action_complete_glucose_data) {
-            GlucoseFormFragment form =  GlucoseFormFragment.newInstance();
-            form.show(getSupportFragmentManager(), "glucoseformfragment");
-
-            return true;
-        } else if ( id == R.id.action_report) {
+        }  else if ( id == R.id.action_report) {
             Intent intent = new Intent(this, DataVisualizationActivity.class);
             startActivity(intent);
 
@@ -539,6 +565,13 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
             trainModel();
             return true;
         }
+        // Llamar para introducir datos manualmente
+        /*else if ( id == R.id.action_complete_glucose_data) {
+            GlucoseFormFragment form =  GlucoseFormFragment.newInstance();
+            form.show(getSupportFragmentManager(), "glucoseformfragment");
+
+            return true;
+        }*/
 
 
         return super.onOptionsItemSelected(item);
@@ -614,49 +647,33 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
                 }
             }
 
+            for (Pair<String, Long> par: saved){
+                if (par.second < history.get(iterator).getTimezoneOffsetInMinutes()) {
+                    String first = par.first;
+                    saved.remove(par);
+                    saved.add(new Pair<String,Long>(first, (long) 0));
+                } else{
+                    switch (par.first){
+                        case "LOW_INSULIN":
+                            break;
+                        case "FAST_INSULIN":
+                            break;
+                        case "STRESS":
+                            history.get(iterator).setStress(true);
+                            break;
+                        //case "START_SPORT":
+                        //    break;
+                        case "END_SPORT":
+                            break;
+                        default:
+                            throw new IllegalStateException("Unexpected value: " + par.first);
+                    }
+                }
+            }
+
         }
 
         latest_data_processed = history.get(history.size()-3).getTimezoneOffsetInMinutes();
-
-        // Check the insulin, sport, stress
-
-
-
-
-        /*
-        for (iterator = 0; iterator < history.size()-3; ++iterator){
-            int aux_iterator = iterator+3;
-            time_difference = history.get(iterator).getTimezoneOffsetInMinutes() + TimeUnit.MINUTES.toMillis(20);
-
-            if (history.get(aux_iterator).getTimezoneOffsetInMinutes() > time_difference) {
-                --aux_iterator;
-            }
-
-
-            while(aux_iterator > iterator){
-                if (history.get(aux_iterator).getTimezoneOffsetInMinutes() < time_difference) {
-                    if (history.get(aux_iterator).glucose() > GLUCOSE_TARGET_MAX) {
-
-                    } else { // < GLUCOSE_TARGET_MIN
-
-                    }
-                }
-                --aux_iterator;
-            }
-
-            if (history.get(iterator+3).getTimezoneOffsetInMinutes() < time_difference){
-                if (history.get(iterator+3).glucose() > GLUCOSE_TARGET_MAX){
-
-                } else { // < GLUCOSE_TARGET_MIN
-
-                }
-            } else{ // Takes into account the next two values
-
-            }
-
-        }
-        */
-
 
         // !
         ReadingData readingData = realmProcessedData.copyToRealmOrUpdate(data_processed);
@@ -667,10 +684,23 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState){
         // Put information to be saved
+        for (Pair<String, Long> par: saved){
+            // Not all time-dependent variables have yet been written
+            if (par.second > 0){ //
+                savedInstanceState.putLong(par.first, par.second);
+            }
+        }
 
+        savedInstanceState.putLong("START_DATE", startDate);
         super.onSaveInstanceState(savedInstanceState);
     }
 
+
+    /*
+     * Transform the last scan controls with all its data into an String
+     *
+     * @glucose: data related to the last set of scanned data
+     */
 
     public String dataToCSV(List<ReadingData> history){
         StringBuilder data = new StringBuilder();
@@ -916,41 +946,14 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
 
     public boolean timeToTrain(){
         // The model will be trained every seven days, halfway through the use of the sensor
-        LocalDate localDate = LocalDate.now();
-        String current = localDate.getDayOfMonth() + "/" + localDate.getMonth() + "/" + localDate.getYear();
-
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
-        Date firstDate = new Date();
-
-        try {
-            firstDate = sdf.parse(startDateString);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        Date secondDate = new Date();
-
-        System.out.println("date: " + secondDate);
-
-        try {
-            secondDate = sdf.parse(current);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("date: " + secondDate);
-
-        long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
-        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-        // long last_day_period = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1);
+        long diffInMillies = Math.abs(System.currentTimeMillis() - startDate);
 
         // Each seven days, the model trains with the new data and is rebuilt
-        if (diff > TimeUnit.DAYS.toMillis(7)){
+        if (diffInMillies > TimeUnit.DAYS.toMillis(7)){
             return true;
         } else{
             return false;
         }
-
     }
 
     public void initPython(){
@@ -960,62 +963,60 @@ public class MainActivity extends AppCompatActivity implements LogFragment.OnSca
         }
     }
 
+
+    public void makePrediction(){
+
+    }
+
     public void trainModel(){
-        dataTreatment(first_time);
+        startDate = System.currentTimeMillis();
+
+        Toast.makeText(this, "Calculando predicción actual...", Toast.LENGTH_SHORT).show();
 
         List<ReadingData>  history = mRealmProcessedData.where(ReadingData.class)
                 .findAllSorted(ReadingData.DATE, Sort.ASCENDING);
 
-        // Model should be trained with new data
-        String data = dataToCSV(history);
-        ReadingData lastRegistry = history.get(history.size());
-        RealmList<GlucoseData> h = lastRegistry.getHistory();
-        GlucoseData last_glucose_data = h.get(h.size());
+        if (history.isEmpty()){
+            Toast.makeText(this, "There is no data available", Toast.LENGTH_SHORT).show();
+        } else{
+            // Model should be trained with new data
+            String data = dataToCSV(history);
+            ReadingData lastRegistry = history.get(history.size());
+            RealmList<GlucoseData> h = lastRegistry.getHistory();
+            GlucoseData last_glucose_data = h.get(h.size()-1);
 
-        String current = currentDataToCSV(last_glucose_data);
+            String current = currentDataToCSV(last_glucose_data);
 
-        initPython();
+            initPython();
 
-        Python python = Python.getInstance();
-        PyObject pythonFile = python.getModule("prediction"); // prediction.py
-        PyObject prediction = pythonFile.callAttr("main", data, current);
-        String result = prediction.toString();
+            Python python = Python.getInstance();
+            PyObject pythonFile = python.getModule("prediction"); // prediction.py
+            PyObject prediction = pythonFile.callAttr("main", data, current);
+            String result = prediction.toString();
 
-        // Inform the user about statistics, predicting their current situation...
-        Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+            // Inform the user about statistics, predicting their current situation...
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+        }
     }
-
-    /*
-    public void predictFromModel(){
-        initPython();
-
-        Python python = Python.getInstance();
-        PyObject pythonFile = python.getModule("prediction"); // prediction.py
-        PyObject prediction = pythonFile.callAttr("predictFromModel", data);
-        String result = prediction.toString();
-
-        // Inform the user about statistics, predicting their current situation...
-        Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
-    }
-     */
-
-
 
 
     public void onNfcReadingFinished(ReadingData readingData) {
         mLastScanTime = new Date().getTime();
-
-        // Deploy DialogFragment to complete the data and modify the database
-        new GlucoseFormFragment().show(getSupportFragmentManager(),"glucoseformfragment");
         onShowScanData(readingData);
+        TidepoolSynchronization.getInstance().startTriggeredSynchronization(getApplicationContext());
 
-        if (timeToTrain()){
-            trainModel();
-        } else{
-            //predictFromModel ();
+        // wait three seconds
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
         }
 
-        TidepoolSynchronization.getInstance().startTriggeredSynchronization(getApplicationContext());
+        // Deploy DialogFragment to complete the data and modify the database
+        // When push the button to complete the data, data gathering and data
+        // treatment will be executed
+        new GlucoseFormFragment(saved, latest_data_processed).show(getSupportFragmentManager(),"glucoseformfragment");
+
     }
 
 
